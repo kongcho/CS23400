@@ -20,7 +20,6 @@ def parseFile(filepath):
     #print(logs[0][0])
     #m = logs[0].__dict__
     #ret = logs[0].getAllMeasurements
-    print(ret)
 
     return logs
 

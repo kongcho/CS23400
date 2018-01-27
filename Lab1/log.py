@@ -2,6 +2,7 @@
 import ast
 import pprint
 import matplotlib.pyplot as plt
+import matplotlib.mlab as plt2
 import numpy as np
 from pylab import fft
 
@@ -83,19 +84,21 @@ class Log:
         plt.show()
 
     def getPeriod(self, ylabel):
+        # finds the likely period of a given measurement
         if ylabel not in self.measurements:
             return
-        xs = self.times
-        ys = self.__dict__[ylabel]
-        # the period of your signal is related to 
-        # the longest wavelength that is peaked in FFT
+
+        # the period of a signal is 1/frequency 
+        # frequency estimated by the longest wavelength of FFT
 
         xf, yf = self.getFreq(ylabel)
-        #period = argmax(abs(yf) )
-
-        period = 1;
-        ## TODO: find the likely period of a given measurement
+        if np.argmax(abs(yf)) == 0:
+            period = 0
+        else: 
+            period = 1/np.argmax(abs(yf))
+    
         return period
+
 
     def getAmplitude(self, ylabel):
         ## TODO: find average amplitude of measurement
