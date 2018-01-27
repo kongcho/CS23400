@@ -9,7 +9,9 @@ class Log:
     measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
 
     def __init__(self, rawdata):
-        if isinstance(rawdata, basestring):
+
+        ## changed from basestring to str since it didn't work on my version of Python
+        if isinstance(rawdata, str):
             rawdata = ast.literal_eval(rawdata)
 
         self.type = rawdata['type']
@@ -81,8 +83,19 @@ class Log:
         plt.show()
 
     def getPeriod(self, ylabel):
+        if ylabel not in self.measurements:
+            return
+        xs = self.times
+        ys = self.__dict__[ylabel]
+        # the period of your signal is related to 
+        # the longest wavelength that is peaked in FFT
+
+        xf, yf = self.getFreq(ylabel)
+        #period = argmax(abs(yf) )
+
+        period = 1;
         ## TODO: find the likely period of a given measurement
-        return 0
+        return period
 
     def getAmplitude(self, ylabel):
         ## TODO: find average amplitude of measurement
@@ -108,5 +121,4 @@ if __name__ == '__main__':
         rawdata = f.read()
 
     log = Log(rawdata)
-
-    log.showPlot()
+    #log.showPlot()
