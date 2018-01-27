@@ -10,16 +10,9 @@ def parseFile(filepath):
     logs = []
     for rd in rawdata:
         log = Log(rd)
-        #ret = log.getAllMeasurements
-        print(log.getAllMeasurements())
-        #print(ret)
-        #log.showPlot()
+        #print(log.getAllMeasurements())
+        log.showPlot()
         logs.append(log)
-
-
-    #print(logs[0][0])
-    #m = logs[0].__dict__
-    #ret = logs[0].getAllMeasurements
 
     return logs
 
