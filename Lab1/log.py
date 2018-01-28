@@ -4,6 +4,7 @@ import pprint
 import matplotlib.pyplot as plt
 import numpy as np
 from pylab import fft
+import operator
 
 class Log:
     measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
@@ -46,12 +47,10 @@ class Log:
         ys = self.__dict__[ylabel]
         x = np.array(xs)
         y = np.array(ys)
-        x = x[:len(x)//2]
-        y = y[:len(y)//2]
         yf = fft(y)
 
         ## TODO: This may not be what we want.
-        return x, yf
+        return yf
 
 
     def showPlot(self): 
@@ -94,7 +93,16 @@ class Log:
 
     def getMeasurementInfo(self, ylabel):
         ## TODO: you may want to add to/modify this
-        return [self.getPeriod(ylabel), self.getAmplitude(ylabel), self.getPeriodVariance(ylabel)]
+        ys = self.__dict__[ylabel]
+        ymax = max(ys)
+        ymin = min(ys)
+        yft = self.getFreq(ylabel)
+        ftMaxIndex = np.argmax(yft)
+        period = self.times[ftMaxIndex]
+        if period > 15:
+            period = 0.
+        ftMaxVal = np.max(yft)
+        return [ymax, ymin, period]
 
     def getAllMeasurements(self):
         ## TODO: you may want to modify this
@@ -104,9 +112,10 @@ class Log:
         return ret
 
 if __name__ == '__main__':
-    with open("logs/activity-team2-Driving-0.txt") as f:
+    with open("logs/activity-team2-Driving-1.txt") as f:
         rawdata = f.read()
 
     log = Log(rawdata)
-
-    log.showPlot()
+    for ylabel in log.measurements:
+        print(ylabel)
+        print(log.getMeasurementInfo(ylabel))

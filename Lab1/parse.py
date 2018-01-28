@@ -11,14 +11,26 @@ def parseFile(filepath):
     logs = []
     for rd in rawdata:
         log = Log(rd)
-        log.showPlot()
+        # log.showPlot()
         logs.append(log)
     return logs
 
 def parseFolder(folderpath):
+    logs = []
     for file in os.listdir(folderpath):
         filepath = os.path.join(folderpath, file)
-        parseFile(filepath)
+        logs += parseFile(filepath)
+    return logs
+
+def parseFolderSelected(folderpath, types):
+    logs = []
+    for file in os.listdir(folderpath):
+        for t in types: 
+            if t in file:
+                filepath = os.path.join(folderpath, file)
+                logs += parseFile(filepath)
+                continue
+    return logs
 
 ## TODO: There may be better ways to display this
 
