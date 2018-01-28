@@ -5,12 +5,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pylab import fft
 
+types = ["Driving", "Jumping", "Standing", "Walking"]
+files = ["./data/activity-dataset-" + activity + ".txt" for activity in types]
+
 class Log:
     measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
 
     def __init__(self, rawdata):
-        if isinstance(rawdata, basestring):
-            rawdata = ast.literal_eval(rawdata)
+        # if isinstance(rawdata, basestring):
+        #     rawdata = ast.literal_eval(rawdata)
 
         self.type = rawdata['type']
 
@@ -54,24 +57,24 @@ class Log:
         return x, yf
 
 
-    def showPlot(self): 
+    def showPlot(self):
         i=1
         plt.figure(1).set_size_inches(24,48)
         for ylabel in self.measurements:
             m = self.__dict__[ylabel]
             plt.subplot(len(self.measurements),2,i)
-            i += 1   
+            i += 1
             plt.plot(self.times,m,label=ylabel)
             plt.xlabel('Time (s)')
             plt.title("magnitude for %s %s" % (self.type, ylabel))
             plt.grid(True)
             plt.yticks([])
-                
+
             plt.subplot(len(self.measurements),2,i)
-            i += 1 
-            
+            i += 1
+
             xf, yf = self.getFreq(ylabel)
-            
+
             plt.plot(xf, np.abs(yf))
             plt.grid()
             plt.title("freq analyisis for %s %s" % (self.type, ylabel))
@@ -104,9 +107,13 @@ class Log:
         return ret
 
 if __name__ == '__main__':
-    with open("logs/activity-team2-Driving-0.txt") as f:
-        rawdata = f.read()
+    all_logs = []
+    for filenames in files:
+        logs = []
+        with open(filenames) as f:
+            rawdata = ast.literal_eval(f.read())
+        for dictionary in rawdata:
+            logs.append(Log(dictionary))
+        all_logs.append(logs)
 
-    log = Log(rawdata)
-
-    log.showPlot()
+    all_logs[0][0].showPlot()
