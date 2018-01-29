@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pylab import fft
 import operator
+from nfft import nfft
+import peakutils
+import os
 
 class Log:
     measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
@@ -41,17 +44,13 @@ class Log:
 
 
     def getFreq(self, ylabel):
-        if ylabel not in self.measurements:
-            return
-        xs = self.times
-        ys = self.__dict__[ylabel]
-        x = np.array(xs)
-        y = np.array(ys)
-        yf = fft(y)
+        ## TODO
+        return 0
 
-        ## TODO: This may not be what we want.
-        return yf
-
+    def getNumPeaks(self, ylabel):
+        cb = np.array(self.__dict__[ylabel])
+        indexes = peakutils.indexes(cb, thres=0.5)
+        return len(indexes)
 
     def showPlot(self): 
         i=1
@@ -69,9 +68,9 @@ class Log:
             plt.subplot(len(self.measurements),2,i)
             i += 1 
             
-            xf, yf = self.getFreq(ylabel)
+            yf = self.getFreq(ylabel)
             
-            plt.plot(xf, np.abs(yf))
+            plt.plot(self.times, yf)
             plt.grid()
             plt.title("freq analyisis for %s %s" % (self.type, ylabel))
             plt.yticks([])
@@ -102,7 +101,7 @@ class Log:
         if period > 15:
             period = 0.
         ftMaxVal = np.max(yft)
-        return [ymax, ymin]
+        return [ymax, ymin, self.getNumPeaks(ylabel)]
 
     def getAllMeasurements(self):
         ## TODO: you may want to modify this
@@ -112,10 +111,13 @@ class Log:
         return ret
 
 if __name__ == '__main__':
-    with open("logs/activity-team2-Driving-1.txt") as f:
-        rawdata = f.read()
-
-    log = Log(rawdata)
-    for ylabel in log.measurements:
-        print(ylabel)
-        print(log.getMeasurementInfo(ylabel))
+    folder = "logs/"
+    for file in os.listdir(folder):
+        filepath = os.path.join(folder, file)
+        with open(filepath) as f:
+            rawdata = f.read()
+        print(filepath)
+        log = Log(rawdata)
+        for ylabel in log.measurements:
+            print(ylabel)
+            print(log.getNumPeaks(ylabel))

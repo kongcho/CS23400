@@ -4,6 +4,7 @@ import numpy as np
 from log import Log
 from parse import parseFolder, parseFolderSelected
 from itertools import combinations
+from nfft import nfft
 
 measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
 
@@ -25,7 +26,7 @@ ylabels = ["xGyro", "zAccl", "yGyro", "yAccl"]
 
 def testMultipleVars(logs, ylabels):
     points = map(lambda x: comboMeas(x, ylabels), logs)
-    kmeans = KMeans(n_clusters=4, random_state=0).fit(points)
+    kmeans = KMeans(n_clusters=2, random_state=0).fit(points)
     labels = kmeans.labels_
     # print(ylabels)
     # print(labels)
@@ -66,9 +67,8 @@ def checkCombos(logs):
             print(ylabels, labels)
             category = perfectFit(logs, labels)
             if category:
-                print(category, ylabels)
+                print("THIS IS IT", category, ylabels)
                 return category, ylabels
-    return "Standing", ['yGyro', 'xMag', 'yAccl', 'yMag']
 
 def getPrediction(log, folder, categories, ylabels):
     logs = parseFolderSelected(folder,categories)
@@ -81,7 +81,7 @@ def getPrediction(log, folder, categories, ylabels):
 def predictNewPoint(point, folder):
     categories = ["Walking", "Jumping", "Driving", "Standing"]
     prediction = getPrediction(point, folder, categories, \
-        ["xGyro", "zAccl", "yGyro", "yAccl"])
+        ['xGyro', 'xAccl', 'zAccl'])
     if prediction == 1:
         return "Jumping"
     categories.remove("Jumping")
@@ -91,7 +91,7 @@ def predictNewPoint(point, folder):
         return "Standing"
     categories.remove("Standing")
     prediction = getPrediction(point, folder, categories, \
-        ['xGyro', 'yGyro', 'zAccl', 'yAccl', 'zGyro', 'zMag'])
+        ['xGyro', 'yAccl'])
     if prediction == 1:
         return "Walking"
     if prediction == 0:
@@ -101,29 +101,33 @@ def predictNewPoint(point, folder):
 folder = "./data/"
 categories = ["Walking", "Jumping", "Driving", "Standing"]
 
-# logs = parseFolder(folder)
+logs = parseFolder(folder)
+# checkCombos(logs)
+
 # for log in logs:
 #     print("Actual: %s" % log.type)
 #     prediction = predictNewPoint(log, folder)
 #     print("Predcition: %s\n" % prediction)
 
+# logs = parseFolder(folder)
 
-logs = parseFolder(folder)
-checkCombos(logs)
+labels = testMultipleVars(logs, ['xGyro', 'xAccl', 'zAccl'])
+gt = checkGroundTruth(logs, labels)
+print(labels)
+print(gt)
 
-# labels = testMultipleVars(logs, ["xGyro", "yGyro", "yAccl"])
-# gt = checkGroundTruth(logs, labels)
-# print(labels)
-# print(gt)
+logs = parseFolderSelected(folder, ["Driving","Walking","Standing"])
+# checkCombos(logs)
 
-# logs = parseFolderSelected(folder, ["Driving","Walking","Standing"])
-# labels = testMultipleVars(logs, ['yGyro', 'xMag', 'yAccl', 'yMag'])
-# gt = checkGroundTruth(logs, labels)
-# print(labels)
-# print(gt)
+labels = testMultipleVars(logs, ['yGyro', 'xMag', 'yAccl', 'yMag'])
+gt = checkGroundTruth(logs, labels)
+print(labels)
+print(gt)
 
-# logs = parseFolderSelected(folder, ["Driving","Walking"])
-# labels = testMultipleVars(logs, ['xGyro', 'yGyro', 'zAccl', 'yAccl', 'zGyro', 'zMag'])
-# gt = checkGroundTruth(logs, labels)
-# print(labels)
-# print(gt)
+logs = parseFolderSelected(folder, ["Driving","Walking"])
+# checkCombos(logs)
+
+labels = testMultipleVars(logs, ['xGyro', 'yAccl'])
+gt = checkGroundTruth(logs, labels)
+print(labels)
+print(gt)
