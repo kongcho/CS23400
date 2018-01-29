@@ -80,6 +80,7 @@ def get_dft(all_arrays):
             length = length - 1
         amps = ndft(arrays[0][:length], arrays[1][:length])
         freqs.append([arrays[1][:length], amps])
+        print(amps)
     return freqs
 
 def plot_everything(all_arrays):
@@ -101,7 +102,8 @@ def get_kmeans(arrays):
 
 if __name__ == '__main__':
     # write_test_data(files)
-    plot_everything(get_dft(one_zGyro_data("test_data.txt")))
+    # plot_everything(get_dft(one_zGyro_data("test_data.txt")))
+    get_dft(one_zGyro_data("test_data.txt"))
     # test = [[1, 1, 1.2, 3, 5, 6, 7, 9, 8], [5, 6, 3, 2, 4, 5, 8, 10, 2]]
     # get_kmeans(test)
     pass

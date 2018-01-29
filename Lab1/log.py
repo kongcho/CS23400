@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import ast
 import pprint
+import operator
 import matplotlib.pyplot as plt
 import numpy as np
 from pylab import fft
+from nfft import ndft
 
 types = ["Driving", "Jumping", "Standing", "Walking"]
 files = ["./data/activity-dataset-" + activity + ".txt" for activity in types]
@@ -49,13 +51,21 @@ class Log:
         ys = self.__dict__[ylabel]
         x = np.array(xs)
         y = np.array(ys)
-        x = x[:len(x)//2]
-        y = y[:len(y)//2]
         yf = fft(y)
 
         ## TODO: This may not be what we want.
-        return x, yf
+        return yf
 
+    def getFreqNew(self, ylabel):
+        if ylabel not in self.measurements:
+            return
+        xs = self.times
+        ys = self.__dict__[ylabel]
+        length = len(xs)//2
+        if length % 2 != 0:
+            length = length - 1
+        amps = ndft(xs[:length], ys[:length])
+        return amps
 
     def showPlot(self):
         i=1
@@ -83,21 +93,90 @@ class Log:
         plt.tight_layout()
         plt.show()
 
+    def findPeaks(self, ylabel):
+        # returns a list of the indices of peaks
+        xs = self.times
+        ys = self.__dict__[ylabel]
+
+        peaks = []
+
+        # this doesn't really work as a peak finder 
+        # need to find a better version since find_peaks_cwt is really slow
+        for x in range (1, len(ys)-1):
+            if (ys[x] > ys[x-1]) and (ys[x] > ys[x-1]):
+                peaks.append(x)
+
+        # this calculation takes way too long: 
+        # peaks = signal.find_peaks_cwt(ys, np.arange(1, len(ys)))
+        # xs = xs[1:]
+        # peaks = signal.find_peaks_cwt(ys, xs)
+
+        return peaks;
+
+    def getNumPeaks(self, ylabel):
+        # returns the number of peaks
+        return len(self.findPeaks(ylabel))
+
+    def getPeriods(self, ylabel):
+        # calculate mean period by measuring distance between peaks
+
+        xs = self.times
+        peaks = self.findPeaks(ylabel)
+        periods = [xs[j]-xs[i] for i, j in zip(peaks[:-1], peaks[1:])]
+        return periods
+
     def getPeriod(self, ylabel):
-        ## TODO: find the likely period of a given measurement
-        return 0
+        #calculate mean period using getPeriods
+
+        periods = self.getPeriods(ylabel)
+        return np.mean(periods)
+
+    def getPeriod1(self, ylabel):
+        # finds the likely period of a given measurement
+        # only works if we correctly apply FFT
+
+        # the period of a signal is 1/frequency 
+        # frequency estimated by the longest wavelength of FFT
+
+        xf, yf = self.getFreq(ylabel)
+
+        # why would this happen?
+        if np.argmax(abs(yf)) == 0:
+            period = 0
+        else:
+            period = 1/np.argmax(abs(yf))
+        return period
 
     def getAmplitude(self, ylabel):
-        ## TODO: find average amplitude of measurement
+        # TODO: finds average amplitude of measurement
         return 0
 
     def getPeriodVariance(self, ylabel):
-        ## TODO: likelihood that the period guess was correct
+        # likelihood that the period guess was correct
         return 0
 
     def getMeasurementInfo(self, ylabel):
         ## TODO: you may want to add to/modify this
-        return [self.getPeriod(ylabel), self.getAmplitude(ylabel), self.getPeriodVariance(ylabel)]
+        ys = self.__dict__[ylabel]
+        ymax = max(ys)
+        ymin = min(ys)
+        yft = self.getFreqNew(ylabel)
+        ftMaxIndex = np.argmax(yft)
+        period = self.times[ftMaxIndex]
+        if period > 15:
+            period = 0.
+        ftMaxVal = np.max(yft)
+        return [ymax,
+                ymin
+#                ftMaxVal,
+#                np.mean(ys),
+#                np.std(ys),
+#                self.getNumPeaks(ylabel),
+#                self.getPeriod(ylabel),
+#                self.getPeriod1(ylabel), # included both period measuments for comparison
+#                self.getAmplitude(ylabel),
+#                self.getPeriodVariance(ylabel)
+        ]
 
     def getAllMeasurements(self):
         ## TODO: you may want to modify this
@@ -107,13 +186,10 @@ class Log:
         return ret
 
 if __name__ == '__main__':
-    all_logs = []
-    for filenames in files:
-        logs = []
-        with open(filenames) as f:
-            rawdata = ast.literal_eval(f.read())
-        for dictionary in rawdata:
-            logs.append(Log(dictionary))
-        all_logs.append(logs)
+    with open("logs/activity-team2-Driving-1.txt") as f:
+        rawdata = f.read()
 
-    all_logs[0][0].showPlot()
+    log = Log(rawdata)
+    for ylabel in log.measurements:
+        print(ylabel)
+        print(log.getMeasurementInfo(ylabel))
