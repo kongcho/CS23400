@@ -138,7 +138,7 @@ class Log:
         # the period of a signal is 1/frequency 
         # frequency estimated by the longest wavelength of FFT
 
-        xf, yf = self.getFreq(ylabel)
+        yf = self.getFreqNew(ylabel)
 
         # why would this happen?
         if np.argmax(abs(yf)) == 0:
@@ -149,7 +149,8 @@ class Log:
 
     def getAmplitude(self, ylabel):
         # TODO: finds average amplitude of measurement
-        return 0
+        ys = self.__dict__[ylabel]
+        return np.average(ys)
 
     def getPeriodVariance(self, ylabel):
         # likelihood that the period guess was correct
@@ -166,15 +167,15 @@ class Log:
         if period > 15:
             period = 0.
         ftMaxVal = np.max(yft)
+        self.getNumPeaks(ylabel)
         return [ymax,
-                ymin
+                ymin,
 #                ftMaxVal,
-#                np.mean(ys),
+                np.mean(ys)
 #                np.std(ys),
-#                self.getNumPeaks(ylabel),
 #                self.getPeriod(ylabel),
-#                self.getPeriod1(ylabel), # included both period measuments for comparison
-#                self.getAmplitude(ylabel),
+#                self.getPeriod1(ylabel) # included both period measuments for comparison
+#                self.getAmplitude(ylabel)
 #                self.getPeriodVariance(ylabel)
         ]
 

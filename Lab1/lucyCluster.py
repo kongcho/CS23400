@@ -27,8 +27,8 @@ def testMultipleVars(logs, ylabels):
     points = map(lambda x: comboMeas(x, ylabels), logs)
     kmeans = KMeans(n_clusters=2, random_state=0).fit(points)
     labels = kmeans.labels_
-    # print(ylabels)
-    # print(labels)
+#    print(ylabels)
+#    print(labels)
     return labels
 
 def checkGroundTruth(logs, labels):
@@ -74,9 +74,12 @@ def checkCombos(logs):
 def getPrediction(log, folder, categories, ylabels):
     logs = parseFolderSelected(folder,categories)
     points = map(lambda x: comboMeas(x, ylabels), logs)
+    print("here1")
     kmeans = KMeans(n_clusters=2, random_state=0).fit(points)
     point = comboMeas(log, ylabels)
+    print("here2")
     prediction = kmeans.predict([point])
+    print("here3")
     return prediction[0]
 
 def predictNewPoint(point, folder):
@@ -106,25 +109,35 @@ logs = parseFolder(folder)
 for log in logs:
     print("Actual: %s" % log.type)
     prediction = predictNewPoint(log, folder)
-    print("Predcition: %s\n" % prediction)
+    print("Prediction: %s\n" % prediction)
 
 
 # logs = parseFolder(folder)
 # checkCombos(logs)
 
-labels = testMultipleVars(logs, ["xGyro", "yGyro", "yAccl"])
-gt = checkGroundTruth(logs, labels)
-print(labels)
-print(gt)
+# print(len(logs))
+# print(logs[0].type)
+# labels = testMultipleVars(logs, ["xGyro", "yGyro", "yAccl", "zAccl"])
+# gt = checkGroundTruth(logs, labels)
+# print("1")
+# print(labels)
+# print("2")
+# print(gt)
 
-logs = parseFolderSelected(folder, ["Driving","Walking","Standing"])
-labels = testMultipleVars(logs, ['yGyro', 'xMag', 'yAccl', 'yMag'])
-gt = checkGroundTruth(logs, labels)
-print(labels)
-print(gt)
+# logs = parseFolderSelected(folder, ["Driving","Walking","Standing"])
+# labels = testMultipleVars(logs, ['yGyro', 'xMag', 'yAccl', 'yMag'])
+# gt = checkGroundTruth(logs, labels)
+# print("3")
+# print(labels)
+# print("4")
+# print(gt)
 
-logs = parseFolderSelected(folder, ["Driving","Walking"])
-labels = testMultipleVars(logs, ['xGyro', 'yGyro', 'zAccl', 'yAccl', 'zGyro', 'zMag'])
-gt = checkGroundTruth(logs, labels)
-print(labels)
-print(gt)
+# logs = parseFolderSelected(folder, ["Driving","Walking"])
+# labels = testMultipleVars(logs, ['xGyro', 'yGyro', 'zAccl', 'yAccl', 'zGyro', 'zMag'])
+# gt = checkGroundTruth(logs, labels)
+# print("5")
+# print(labels)
+# print("6")
+# print(gt)
+
+
