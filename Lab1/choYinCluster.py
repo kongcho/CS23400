@@ -18,8 +18,7 @@ def process_times(old_times):
 
 def get_test_datas(filename):
     data_type = "zGyro"
-    no_of_data = 1
-    index_of_data = 4
+    no_of_data = 2
 
     short_dicts = []
     with open(filename, 'r') as f:
@@ -62,7 +61,7 @@ def write_test_data(filenames):
     all_data = []
     with open("test_data.txt", 'w') as f:
         for filename in filenames:
-            all_data += get_test_data(filename)
+            all_data += get_test_datas(filename)
         f.write(str(all_data))
     return all_data
 
@@ -79,19 +78,8 @@ def get_dft(all_arrays):
         length = len(arrays[0])//2
         if length % 2 != 0:
             length = length - 1
-        # arrays[0] = fft(arrays[0][:length])
-        # res = np.array([[[i]*no_freqs], [amps]])
         amps = ndft(arrays[0][:length], arrays[1][:length])
-        freqs.append([range(length), amps])
-
-    time_to_plot = 2 # second
-    sample_rate = 100 # samples per second
-    num_samples = sample_rate * time_to_plot
-    magnitude_only = [np.sqrt(i.np.real**2 + i.np.imag**2)/len(fft_output) for i in freqs]
-    frequencies = [(i*1.0/num_samples)*sample_rate for i in range(num_samples//2+1)]
-    setup_graph(x_label='frequency (in Hz)', y_label='amplitude', title='frequency domain')
-    plt.plot(frequencies, magnitude_only, 'r')
-    plt.show()
+        freqs.append([arrays[1][:length], amps])
     return freqs
 
 def plot_everything(all_arrays):
@@ -107,13 +95,13 @@ def get_kmeans(arrays):
 
     colors = ([([0.4,1,0.4],[1,0.4,0.4],[0.1,0.8,1],[0.5,0.8,1])[i] for i in label])
     plt.scatter(arrxy[:,0], arrxy[:,1], c=colors)
-    plt.scatter(centroids[:,0],centroids[:,1], marker='o', s = 500, linewidths=2, c='none')
-    plt.scatter(centroids[:,0],centroids[:,1], marker='x', s = 500, linewidths=2)
+    plt.scatter(centroids[:,0],centroids[:,1], marker='o', s = 300, linewidths=1, c='none')
+    plt.scatter(centroids[:,0],centroids[:,1], marker='x', s = 300, linewidths=1)
     plt.show()
 
 if __name__ == '__main__':
-    write_test_data(files)
-    #plot_everything(get_dft(one_zGyro_data("test_data.txt")))
+    # write_test_data(files)
+    plot_everything(get_dft(one_zGyro_data("test_data.txt")))
     # test = [[1, 1, 1.2, 3, 5, 6, 7, 9, 8], [5, 6, 3, 2, 4, 5, 8, 10, 2]]
     # get_kmeans(test)
     pass
