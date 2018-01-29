@@ -102,7 +102,7 @@ class Log:
         if period > 15:
             period = 0.
         ftMaxVal = np.max(yft)
-        return [ymax, ymin, period]
+        return [ymax, ymin]
 
     def getAllMeasurements(self):
         ## TODO: you may want to modify this
