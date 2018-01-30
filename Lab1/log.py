@@ -4,16 +4,16 @@ import pprint
 import matplotlib.pyplot as plt
 import numpy as np
 from pylab import fft
-
-types = ["Driving", "Jumping", "Standing", "Walking"]
-files = ["./data/activity-dataset-" + activity + ".txt" for activity in types]
+from nfft import ndft
+import peakutils
+import operator
 
 class Log:
     measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
 
     def __init__(self, rawdata):
-        # if isinstance(rawdata, basestring):
-        #     rawdata = ast.literal_eval(rawdata)
+        if isinstance(rawdata, basestring):
+            rawdata = ast.literal_eval(rawdata)
 
         self.type = rawdata['type']
 
@@ -49,32 +49,40 @@ class Log:
         ys = self.__dict__[ylabel]
         x = np.array(xs)
         y = np.array(ys)
-        x = x[:len(x)//2]
-        y = y[:len(y)//2]
         yf = fft(y)
 
         ## TODO: This may not be what we want.
-        return x, yf
+        return yf
 
-
-    def showPlot(self):
+    def getFreqNew(self, ylabel):
+        if ylabel not in self.measurements:
+            return
+        xs = self.times
+        ys = self.__dict__[ylabel]
+        length = len(xs)//2
+        if length % 2 != 0:
+            length = length - 1
+        amps = ndft(xs[:length], ys[:length])
+        return amps
+    
+    def showPlot(self): 
         i=1
         plt.figure(1).set_size_inches(24,48)
         for ylabel in self.measurements:
             m = self.__dict__[ylabel]
             plt.subplot(len(self.measurements),2,i)
-            i += 1
+            i += 1   
             plt.plot(self.times,m,label=ylabel)
             plt.xlabel('Time (s)')
             plt.title("magnitude for %s %s" % (self.type, ylabel))
             plt.grid(True)
             plt.yticks([])
-
+                
             plt.subplot(len(self.measurements),2,i)
-            i += 1
-
+            i += 1 
+            
             xf, yf = self.getFreq(ylabel)
-
+            
             plt.plot(xf, np.abs(yf))
             plt.grid()
             plt.title("freq analyisis for %s %s" % (self.type, ylabel))
@@ -85,11 +93,23 @@ class Log:
 
     def getPeriod(self, ylabel):
         ## TODO: find the likely period of a given measurement
-        return 0
+        yft = self.getFreqNew(ylabel)
+#        ftMaxIndex = np.argmax(yft)
+#        period = self.times[ftMaxIndex]
+#        if period > 15:
+#            period = 0.0
+        ftMaxVal = np.max(yft)
+        return ftMaxVal
+
+    def getNumPeaks(self, ylabel):
+        cb = np.array(self.__dict__[ylabel])
+        indexes = peakutils.indexes(cb, thres=0.5)
+        return len(indexes)
 
     def getAmplitude(self, ylabel):
         ## TODO: find average amplitude of measurement
-        return 0
+        ys = self.__dict__[ylabel]
+        return np.average(ys)
 
     def getPeriodVariance(self, ylabel):
         ## TODO: likelihood that the period guess was correct
@@ -97,7 +117,16 @@ class Log:
 
     def getMeasurementInfo(self, ylabel):
         ## TODO: you may want to add to/modify this
-        return [self.getPeriod(ylabel), self.getAmplitude(ylabel), self.getPeriodVariance(ylabel)]
+        ys = self.__dict__[ylabel]
+        ymax = max(ys)
+        ymin = min(ys)
+        return [ymax
+                , ymin
+                , self.getNumPeaks(ylabel)
+#                , np.std(ys)
+                , self.getAmplitude(ylabel)
+#                , self.getPeriod(ylabel)
+        ]
 
     def getAllMeasurements(self):
         ## TODO: you may want to modify this
@@ -107,13 +136,10 @@ class Log:
         return ret
 
 if __name__ == '__main__':
-    all_logs = []
-    for filenames in files:
-        logs = []
-        with open(filenames) as f:
-            rawdata = ast.literal_eval(f.read())
-        for dictionary in rawdata:
-            logs.append(Log(dictionary))
-        all_logs.append(logs)
+    with open("logs/activity-team2-Driving-1.txt") as f:
+        rawdata = f.read()
 
-    all_logs[0][0].showPlot()
+    log = Log(rawdata)
+    for ylabel in log.measurements:
+        print(ylabel)
+        print(log.getMeasurementInfo(ylabel))
