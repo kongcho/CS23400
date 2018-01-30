@@ -2,7 +2,7 @@
 from sklearn.cluster import KMeans
 import numpy as np
 from log import Log
-from parse import parseFolder, parseFolderSelected
+from parse import parseFolder, parseFolderSelected, parseTestFolder
 from itertools import combinations
 import datetime
 
@@ -73,7 +73,7 @@ def checkCombos(logs):
 
 def getPrediction(log, folder, categories, ylabels):
     print("1 " + str(datetime.datetime.now()))
-    logs = parseFolderSelected(folder,categories)
+    logs = parseFolderSelected(folder, categories)
     print("2 " + str(datetime.datetime.now()))
     points = map(lambda x: comboMeas(x, ylabels), logs)
     print("3 " + str(datetime.datetime.now()))
@@ -166,20 +166,20 @@ def predictNewPoint(point, folder):
         return "Walking"
 
 
-folder = "./data/"
+folder = "./test/"
 categories = ["Walking", "Jumping", "Driving", "Standing"]
 
 def new_func(folder):
     predictNewPointFast(folder)
 
 def old_func(folder):
-    logs = parseFolder(folder)
+    logs = parseTestFolder(folder)
     for log in logs:
         print("Actual: %s" % log.type)
-        prediction = predictNewPoint(log, folder)
+        prediction = predictNewPoint(log, "./data")
         print("Prediction: %s\n" % prediction)
 
-#old_func(folder)
+old_func(folder)
 #checkCombos(log)
 
 def test_vars(folder):
@@ -202,4 +202,4 @@ def test_vars(folder):
     print(labels)
     print(gt)
 
-test_vars(folder)
+

@@ -3,6 +3,12 @@ import os
 import ast
 from log import Log
 
+def parseTestFile(filepath):
+    with open(filepath) as f:
+        rawdata = f.read()
+    rawdata = ast.literal_eval(rawdata)
+    log = Log(rawdata)
+    return log
 
 def parseFile(filepath):
     with open(filepath) as f:
@@ -11,14 +17,35 @@ def parseFile(filepath):
     logs = []
     for rd in rawdata:
         log = Log(rd)
-        log.showPlot()
+        # log.showPlot()
         logs.append(log)
     return logs
 
-def parseFolder(folderpath):
+def parseTestFolder(folderpath):
+    logs = []
     for file in os.listdir(folderpath):
         filepath = os.path.join(folderpath, file)
-        parseFile(filepath)
+        with open(filepath) as f:
+            rawdata = ast.literal_eval(f.read())
+            logs.append(Log(rawdata))
+    return logs
+
+def parseFolder(folderpath):
+    logs = []
+    for file in os.listdir(folderpath):
+        filepath = os.path.join(folderpath, file)
+        logs += parseTestFile(filepath)
+    return logs
+
+def parseFolderSelected(folderpath, types):
+    logs = []
+    for file in os.listdir(folderpath):
+        for t in types: 
+            if t in file:
+                filepath = os.path.join(folderpath, file)
+                logs += parseFile(filepath)
+                continue
+    return logs
 
 ## TODO: There may be better ways to display this
 
