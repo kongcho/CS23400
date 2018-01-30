@@ -74,51 +74,31 @@ def checkCombos(logs):
     return "Standing", ['yGyro', 'xMag', 'yAccl', 'yMag']
 
 def getPrediction(log, folder, categories, ylabels):
-    print("1 " + str(datetime.datetime.now()))
     logs = parseFolderSelected(folder, categories)
-    print("2 " + str(datetime.datetime.now()))
     points = map(lambda x: comboMeas(x, ylabels), logs)
-    print("3 " + str(datetime.datetime.now()))
-    print(points[0])
-    print(points[0][0])
     kmeans = KMeans(n_clusters=2, random_state=0).fit(points)
-    print("4 " + str(datetime.datetime.now()))
     point = comboMeas(log, ylabels)
-    print(kmeans.labels_)
-    print("5 " + str(datetime.datetime.now()))
     prediction = kmeans.predict([point])
-    print("6 " + str(datetime.datetime.now()))
-    print(prediction)
     return prediction[0]
 
 def getPredictionFast(point, all_points, ylabels):
     all_ylabels =  ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
     indexes = []
-    print("1 " + str(datetime.datetime.now()))
     for y in ylabels:
         for i, ylabel in enumerate(all_ylabels):
             if y == ylabel:
                 indexes.append(i)
-    print("2 " + str(datetime.datetime.now()))
     new_points = []
     for i in all_points:
         temp = []
         for x in indexes:
             temp += i[x]
         new_points.append(temp)
-    print(new_points[0])
-    print(new_points[0][0])
-    print("3 " + str(datetime.datetime.now()))
     new_point = []
     for x in indexes:
         new_point += point[x]
-    print("4 " + str(datetime.datetime.now()))
     kmeans = KMeans(n_clusters=2, random_state=0).fit(new_points)
-    print(kmeans.labels_)
-    print("5 " + str(datetime.datetime.now()))
     prediction = kmeans.predict([new_point])
-    print("6 " + str(datetime.datetime.now()))
-    print(prediction)
     return prediction[0]
 
 def parseFolderSelectedFast(folderpath, types):
@@ -146,22 +126,21 @@ def comboMeasFast(log, measArr):
     return points
 
 def predictFast(test_folder, folder):
-    print("a " + str(datetime.datetime.now()))
     types = ["Walking", "Jumping", "Driving", "Standing"]
     ylabels =  ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
     all_logs = parseFolderSelectedFast(folder, types)
-    print("b " + str(datetime.datetime.now()))
     all_points = {}
     for key in all_logs:
         all_points[key] = map(lambda x: comboMeasFast(x, ylabels), all_logs[key])
-    print("c " + str(datetime.datetime.now()))
     points = getRightLogs(all_points, types)
-    print("d " + str(datetime.datetime.now()))
     test_logs = parseFolder(test_folder)
     for log in test_logs:
-        print("Actual: %s" % log.type)
         result = predictNewPointFast(log, points, ylabels, all_points)
+        print("Actual: %s" % log.type)
+        if log.type != result:
+            print "WRONG!!: ",
         print("Prediction: %s\n" % result)
+
 
 def predictNewPointFast(log, points, ylabels, all_points):
     types = ["Walking", "Jumping", "Driving", "Standing"]
@@ -250,6 +229,5 @@ def getTestResults():
 
 # getTestResults()
 # getOldResults()
-# getFastResults()
-# getTestResults(folder)
+getFastResults()
 # checkCombos(log)
