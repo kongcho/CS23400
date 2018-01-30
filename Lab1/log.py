@@ -124,7 +124,7 @@ class Log:
                 , ymin
                 , self.getNumPeaks(ylabel)
 #                , np.std(ys)
-                , self.getAmplitude(ylabel)
+#                , self.getAmplitude(ylabel)
 #                , self.getPeriod(ylabel)
         ]
 

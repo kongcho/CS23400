@@ -2,9 +2,10 @@
 from sklearn.cluster import KMeans
 import numpy as np
 from log import Log
-from parse import parseFolder, parseFolderSelected, parseTestFolder
+from parse import *
 from itertools import combinations
 import datetime
+import os
 
 measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
 categories = ["Walking", "Jumping", "Driving", "Standing"]
@@ -78,15 +79,19 @@ def getPrediction(log, folder, categories, ylabels):
     print("2 " + str(datetime.datetime.now()))
     points = map(lambda x: comboMeas(x, ylabels), logs)
     print("3 " + str(datetime.datetime.now()))
+    print(points[0])
+    print(points[0][0])
     kmeans = KMeans(n_clusters=2, random_state=0).fit(points)
     print("4 " + str(datetime.datetime.now()))
     point = comboMeas(log, ylabels)
+    print(kmeans.labels_)
     print("5 " + str(datetime.datetime.now()))
     prediction = kmeans.predict([point])
     print("6 " + str(datetime.datetime.now()))
+    print(prediction)
     return prediction[0]
 
-def getPredictionFast(all_points, i, log, ylabels):
+def getPredictionFast(point, all_points, ylabels):
     all_ylabels =  ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
     indexes = []
     print("1 " + str(datetime.datetime.now()))
@@ -95,59 +100,91 @@ def getPredictionFast(all_points, i, log, ylabels):
             if y == ylabel:
                 indexes.append(i)
     print("2 " + str(datetime.datetime.now()))
-    new_points = map(lambda arr: [arr[x] for x in indexes], all_points)
+    new_points = []
+    for i in all_points:
+        temp = []
+        for x in indexes:
+            temp += i[x]
+        new_points.append(temp)
+    print(new_points[0])
+    print(new_points[0][0])
     print("3 " + str(datetime.datetime.now()))
-#    print(new_points)
-    new_point = [all_points[i][x] for x in indexes]
+    new_point = []
+    for x in indexes:
+        new_point += point[x]
     print("4 " + str(datetime.datetime.now()))
-#    print(new_point)
     kmeans = KMeans(n_clusters=2, random_state=0).fit(new_points)
+    print(kmeans.labels_)
     print("5 " + str(datetime.datetime.now()))
-    #point = comboMeas(log, ylabels)
     prediction = kmeans.predict([new_point])
     print("6 " + str(datetime.datetime.now()))
-#    print(prediction)
+    print(prediction)
     return prediction[0]
 
 def parseFolderSelectedFast(folderpath, types):
-    logs = []
+    logs = {}
     for file in os.listdir(folderpath):
         curr_types = []
         for t in types:
             if t in file:
                 filepath = os.path.join(folderpath, file)
                 curr_types += parseFile(filepath)
-                continue
-            logs.append(curr_types)
+                logs[t] = curr_types
     return logs
 
-def removeCat(removing, categories, all_points):
-    pass
+def getRightLogs(all_points, types):
+    logs = []
+    for key in all_points:
+        if key in types:
+            logs += all_points[key]
+    return logs
 
-def predictNewPointFast(folder):
-    categories = ["Walking", "Jumping", "Driving", "Standing"]
+def comboMeasFast(log, measArr):
+    points = []
+    for ylabel in measArr:
+        points += [log.getMeasurementInfo(ylabel)]
+    return points
+
+def predictFast(test_folder, folder):
+    print("a " + str(datetime.datetime.now()))
+    types = ["Walking", "Jumping", "Driving", "Standing"]
     ylabels =  ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
-    logs = parseFolderSelectedFast(folder, categories)
-    all_points = map(lambda x: comboMeas(x, ylabels), logs)
-    for i, log in enumerate(logs):
+    all_logs = parseFolderSelectedFast(folder, types)
+    print("b " + str(datetime.datetime.now()))
+    all_points = {}
+    for key in all_logs:
+        all_points[key] = map(lambda x: comboMeasFast(x, ylabels), all_logs[key])
+    print("c " + str(datetime.datetime.now()))
+    points = getRightLogs(all_points, types)
+    print("d " + str(datetime.datetime.now()))
+    test_logs = parseFolder(test_folder)
+    for log in test_logs:
         print("Actual: %s" % log.type)
-        prediction = getPredictionFast(all_points, i, log, \
-                                       ["xGyro", "zAccl", "yGyro", "yAccl"])
-        if prediction == 1:
-            result = "Jumping"
-        categories.remove("Jumping")
-        prediction = getPredictionFast(all_points, i, log, \
-                                       ['yGyro', 'xMag', 'yAccl', 'yMag'])
-        if prediction == 0:
-            result = "Standing"
-        categories.remove("Standing")
-        prediction = getPredictionFast(all_points, i, log, \
-                                       ['xGyro', 'yGyro', 'zAccl', 'yAccl', 'zGyro', 'zMag'])
-        if prediction == 1:
-            result = "Walking"
-        if prediction == 0:
-            result = "Driving"
+        result = predictNewPointFast(log, points, ylabels, all_points)
         print("Prediction: %s\n" % result)
+
+def predictNewPointFast(log, points, ylabels, all_points):
+    types = ["Walking", "Jumping", "Driving", "Standing"]
+    point = comboMeasFast(log, ylabels)
+    prediction = getPredictionFast(point, points, \
+                                   ["xGyro", "zAccl", "yGyro", "yAccl"])
+    if prediction == 1:
+        return "Jumping"
+    types.remove("Jumping")
+    points = getRightLogs(all_points, types)
+    prediction = getPredictionFast(point, points, \
+                                   ['yGyro', 'xMag', 'yAccl', 'yMag'])
+    if prediction == 0:
+        return "Standing"
+    types.remove("Standing")
+    points = getRightLogs(all_points, types)
+    prediction = getPredictionFast(point, points, \
+                                   ['xGyro', 'yGyro', 'zAccl', 'yAccl', 'zGyro', 'zMag'])
+    if prediction == 1:
+        return "Driving"
+    if prediction == 0:
+        return "Walking"
+
 
 def predictNewPoint(point, folder):
     categories = ["Walking", "Jumping", "Driving", "Standing"]
@@ -190,8 +227,10 @@ def test_vars(folder):
     print(gt)
 
 
-def getFastResults(folder):
-    predictNewPointFast(folder)
+def getFastResults():
+    test_folder = "./data"
+    folder = "./data"
+    predictFast(test_folder, folder)
 
 def getOldResults():
     folder = "./data"
@@ -209,5 +248,8 @@ def getTestResults():
         prediction = predictNewPoint(log, "./data")
         print("Prediction: %s\n" % prediction)
 
-getTestResults(folder)
-#checkCombos(log)
+# getTestResults()
+# getOldResults()
+# getFastResults()
+# getTestResults(folder)
+# checkCombos(log)

@@ -27,7 +27,7 @@ def parseFolder(folderpath):
     logs = []
     for file in os.listdir(folderpath):
         filepath = os.path.join(folderpath, file)
-        logs += parseTestFile(filepath)
+        logs += parseFile(filepath)
     return logs
 
 def parseFolderSelected(folderpath, types):
