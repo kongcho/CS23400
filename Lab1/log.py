@@ -4,6 +4,7 @@ import pprint
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal as signal
+from numpy.nfft import nfft
 from pylab import fft
 
 class Log:
