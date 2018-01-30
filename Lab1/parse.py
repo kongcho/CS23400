@@ -3,13 +3,6 @@ import os
 import ast
 from log import Log
 
-def parseTestFile(filepath):
-    with open(filepath) as f:
-        rawdata = f.read()
-    rawdata = ast.literal_eval(rawdata)
-    log = Log(rawdata)
-    return log
-
 def parseFile(filepath):
     with open(filepath) as f:
         rawdata = f.read()

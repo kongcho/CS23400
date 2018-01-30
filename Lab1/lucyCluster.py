@@ -7,6 +7,7 @@ from itertools import combinations
 import datetime
 
 measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
+categories = ["Walking", "Jumping", "Driving", "Standing"]
 
 def testEachVar(logs):
     for ylabel in measurements:
@@ -111,11 +112,13 @@ def getPredictionFast(all_points, i, log, ylabels):
 def parseFolderSelectedFast(folderpath, types):
     logs = []
     for file in os.listdir(folderpath):
+        curr_types = []
         for t in types:
             if t in file:
                 filepath = os.path.join(folderpath, file)
-                logs += parseFile(filepath)
+                curr_types += parseFile(filepath)
                 continue
+            logs.append(curr_types)
     return logs
 
 def removeCat(removing, categories, all_points):
@@ -124,7 +127,7 @@ def removeCat(removing, categories, all_points):
 def predictNewPointFast(folder):
     categories = ["Walking", "Jumping", "Driving", "Standing"]
     ylabels =  ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
-    logs = parseFolderSelected(folder, categories)
+    logs = parseFolderSelectedFast(folder, categories)
     all_points = map(lambda x: comboMeas(x, ylabels), logs)
     for i, log in enumerate(logs):
         print("Actual: %s" % log.type)
@@ -166,22 +169,6 @@ def predictNewPoint(point, folder):
         return "Walking"
 
 
-folder = "./test/"
-categories = ["Walking", "Jumping", "Driving", "Standing"]
-
-def new_func(folder):
-    predictNewPointFast(folder)
-
-def old_func(folder):
-    logs = parseTestFolder(folder)
-    for log in logs:
-        print("Actual: %s" % log.type)
-        prediction = predictNewPoint(log, "./data")
-        print("Prediction: %s\n" % prediction)
-
-old_func(folder)
-#checkCombos(log)
-
 def test_vars(folder):
     logs = parseFolder(folder)
 
@@ -203,3 +190,24 @@ def test_vars(folder):
     print(gt)
 
 
+def getFastResults(folder):
+    predictNewPointFast(folder)
+
+def getOldResults():
+    folder = "./data"
+    logs = parseFolder(folder)
+    for log in logs:
+        print("Actual: %s" % log.type)
+        prediction = predictNewPoint(log, "./data")
+        print("Prediction: %s\n" % prediction)
+
+def getTestResults():
+    folder = "./test"
+    logs = parseTestFolder(folder)
+    for log in logs:
+        print("Actual: %s" % log.type)
+        prediction = predictNewPoint(log, "./data")
+        print("Prediction: %s\n" % prediction)
+
+getTestResults(folder)
+#checkCombos(log)
