@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 from sklearn.cluster import KMeans
-import numpy as np
 from log import Log
 from parse import *
 from itertools import combinations
-import datetime
+import numpy as np
 import os
 
 measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
@@ -81,25 +80,25 @@ def getPrediction(log, folder, categories, ylabels):
     prediction = kmeans.predict([point])
     return prediction[0]
 
-def getPredictionFast(point, all_points, ylabels):
-    all_ylabels =  ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
-    indexes = []
-    for y in ylabels:
-        for i, ylabel in enumerate(all_ylabels):
-            if y == ylabel:
-                indexes.append(i)
-    new_points = []
-    for i in all_points:
-        temp = []
-        for x in indexes:
-            temp += i[x]
-        new_points.append(temp)
-    new_point = []
-    for x in indexes:
-        new_point += point[x]
-    kmeans = KMeans(n_clusters=2, random_state=0).fit(new_points)
-    prediction = kmeans.predict([new_point])
-    return prediction[0]
+
+def predictNewPoint(point, folder):
+    categories = ["Walking", "Jumping", "Driving", "Standing"]
+    prediction = getPrediction(point, folder, categories, \
+                               ["xGyro", "zAccl", "yGyro", "yAccl"])
+    if prediction == 1:
+        return "Jumping"
+    categories.remove("Jumping")
+    prediction = getPrediction(point, folder, categories, \
+                               ['yGyro', 'xMag', 'yAccl', 'yMag'])
+    if prediction == 0:
+        return "Standing"
+    categories.remove("Standing")
+    prediction = getPrediction(point, folder, categories, \
+                               ['xGyro', 'yGyro', 'zAccl', 'yAccl', 'zGyro', 'zMag'])
+    if prediction == 1:
+        return "Driving"
+    if prediction == 0:
+        return "Walking"
 
 def parseFolderSelectedFast(folderpath, types):
     logs = {}
@@ -125,7 +124,49 @@ def comboMeasFast(log, measArr):
         points += [log.getMeasurementInfo(ylabel)]
     return points
 
+def getPredictionFast(point, all_points, all_ylabels, ylabels):
+    indexes = []
+    for y in ylabels:
+        for i, ylabel in enumerate(all_ylabels):
+            if y == ylabel:
+                indexes.append(i)
+    new_points = []
+    for i in all_points:
+        temp = []
+        for x in indexes:
+            temp += i[x]
+        new_points.append(temp)
+    new_point = []
+    for x in indexes:
+        new_point += point[x]
+    kmeans = KMeans(n_clusters=2, random_state=0).fit(new_points)
+    prediction = kmeans.predict([new_point])
+    return prediction[0]
+
+def predictNewPointFast(log, points, ylabels, all_points):
+    types = ["Walking", "Jumping", "Driving", "Standing"]
+    point = comboMeasFast(log, ylabels)
+    prediction = getPredictionFast(point, points, ylabels, \
+                                   ["xGyro", "zAccl", "yGyro", "yAccl"])
+    if prediction == 1:
+        return "Jumping"
+    types.remove("Jumping")
+    points = getRightLogs(all_points, types)
+    prediction = getPredictionFast(point, points, ylabels, \
+                                   ['yGyro', 'xMag', 'yAccl', 'yMag'])
+    if prediction == 0:
+        return "Standing"
+    types.remove("Standing")
+    points = getRightLogs(all_points, types)
+    prediction = getPredictionFast(point, points, ylabels, \
+                                   ['xGyro', 'yGyro', 'zAccl', 'yAccl', 'zGyro', 'zMag'])
+    if prediction == 1:
+        return "Driving"
+    if prediction == 0:
+        return "Walking"
+
 def predictFast(test_folder, folder):
+    wrongs = 0
     types = ["Walking", "Jumping", "Driving", "Standing"]
     ylabels =  ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
     all_logs = parseFolderSelectedFast(folder, types)
@@ -138,52 +179,10 @@ def predictFast(test_folder, folder):
         result = predictNewPointFast(log, points, ylabels, all_points)
         print("Actual: %s" % log.type)
         if log.type != result:
+            wrongs += 1
             print "WRONG!!: ",
         print("Prediction: %s\n" % result)
-
-
-def predictNewPointFast(log, points, ylabels, all_points):
-    types = ["Walking", "Jumping", "Driving", "Standing"]
-    point = comboMeasFast(log, ylabels)
-    prediction = getPredictionFast(point, points, \
-                                   ["xGyro", "zAccl", "yGyro", "yAccl"])
-    if prediction == 1:
-        return "Jumping"
-    types.remove("Jumping")
-    points = getRightLogs(all_points, types)
-    prediction = getPredictionFast(point, points, \
-                                   ['yGyro', 'xMag', 'yAccl', 'yMag'])
-    if prediction == 0:
-        return "Standing"
-    types.remove("Standing")
-    points = getRightLogs(all_points, types)
-    prediction = getPredictionFast(point, points, \
-                                   ['xGyro', 'yGyro', 'zAccl', 'yAccl', 'zGyro', 'zMag'])
-    if prediction == 1:
-        return "Driving"
-    if prediction == 0:
-        return "Walking"
-
-
-def predictNewPoint(point, folder):
-    categories = ["Walking", "Jumping", "Driving", "Standing"]
-    prediction = getPrediction(point, folder, categories, \
-                               ["xGyro", "zAccl", "yGyro", "yAccl"])
-    if prediction == 1:
-        return "Jumping"
-    categories.remove("Jumping")
-    prediction = getPrediction(point, folder, categories, \
-                               ['yGyro', 'xMag', 'yAccl', 'yMag'])
-    if prediction == 0:
-        return "Standing"
-    categories.remove("Standing")
-    prediction = getPrediction(point, folder, categories, \
-                               ['xGyro', 'yGyro', 'zAccl', 'yAccl', 'zGyro', 'zMag'])
-    if prediction == 1:
-        return "Driving"
-    if prediction == 0:
-        return "Walking"
-
+    print("wrongs: " + str(wrongs))
 
 def test_vars(folder):
     logs = parseFolder(folder)
