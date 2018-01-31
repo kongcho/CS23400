@@ -147,7 +147,7 @@ def predictNewPointFast(log, points, ylabels, all_points):
     types = ["Walking", "Jumping", "Driving", "Standing"]
     point = comboMeasFast(log, ylabels)
     prediction = getPredictionFast(point, points, ylabels, \
-                                   ["xGyro", "zAccl", "yGyro", "yAccl"])
+                                   ['xAccl', 'yAccl', 'zAccl', 'xGyro'])
     if prediction == 1:
         return "Jumping"
     types.remove("Jumping")
