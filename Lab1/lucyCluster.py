@@ -55,7 +55,7 @@ def checkCombos(logs, categories, thres):
     bestGt = None
     bestExpected = None
     for expected in categories:
-        # print(expected)
+        print(expected)
         for i in range(1,len(measurements) + 1):
             for ylabels in combinations(np.array(measurements), i):
                 labels = testMultipleVars(logs, ylabels, thres)
@@ -67,7 +67,7 @@ def checkCombos(logs, categories, thres):
                     bestNum = offBy
                     bestGt = ylabels
                     bestExpected = expected
-                # print(ylabels, offBy, gt)
+                print(ylabels, offBy, gt)
                 if perfectFit(logs, labels, expected):
                     print("THIS IS IT", expected, ylabels)
                     return expected, offBy, ylabels
@@ -114,42 +114,41 @@ def getBestThreshold(logs, categories):
     print(bestThres)
     return bestThres
 
+def showGt(logs, ylabels, expected, thres):
+    print("***")
+    print("expected: %s" % expected)
+    print("printing false negatives and false positives")
+    labels = testMultipleVars(logs, ylabels, thres)
+    gt = checkGroundTruth(logs, labels, expected)
+    print(gt)
+    print("***")
+
 
 folder = "./data/"
 categories = ["Walking", "Jumping", "Driving", "Standing"]
 
 logs = parseFolder(folder)
-checkCombos(logs, categories, 0.0)
-# getBestThreshold(logs, categories)
+ylabels = ["xAccl", "zAccl"]
+showGt(logs, ylabels, "Jumping", 0.)
 
 # for log in logs:
 #     print("Actual: %s" % log.type)
 #     prediction = predictNewPoint(log, folder)
 #     print("Predcition: %s\n" % prediction)
 
-# logs = parseFolder(folder)
-
-# labels = testMultipleVars(logs, ['xGyro', 'xAccl', 'zAccl'])
-# gt = checkGroundTruth(logs, labels)
-# print(labels)
-# print(gt)
 
 categories.remove("Jumping")
 logs = parseFolderSelected(folder, categories)
-checkCombos(logs, categories, 0.2)
-
+ylabels = ["yAccl"]
+showGt(logs, ylabels, "Driving", 0.2)
 # getBestThreshold(logs, categories)
 #### yAccl and zAccl seem to consistantly yield the best results
 #### the optimal threshold is around thres=0.2
 
-# labels = testMultipleVars(logs, ['yGyro', 'xMag', 'yAccl', 'yMag'])
-# gt = checkGroundTruth(logs, labels, "Standing")
-# print(labels)
-# print(gt)
 
 categories.remove("Driving")
 logs = parseFolderSelected(folder, categories)
-checkCombos(logs, categories, 0.5)
+showGt(logs, ylabels, "Standing", 0.5)
 
 # getBestThreshold(logs, categories)
 ## best threshold thres=0.5, only yAccl
@@ -157,8 +156,3 @@ checkCombos(logs, categories, 0.5)
 # logs = parseFolderSelected(folder, categories)
 # for i in range(10):
 #     checkCombos(logs, categories, i/10.)
-
-# labels = testMultipleVars(logs, ['xGyro', 'yAccl'])
-# gt = checkGroundTruth(logs, labels)
-# print(labels)
-# print(gt)

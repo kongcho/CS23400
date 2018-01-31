@@ -8,6 +8,7 @@ import operator
 from nfft import nfft
 from scipy.signal import savgol_filter
 import peakutils
+import peakutils.plot
 import os
 
 class Log:
@@ -51,7 +52,7 @@ class Log:
     def getNumPeaks(self, ylabel, thres):
         ys = np.array(self.__dict__[ylabel])
         ys = savgol_filter(ys, 5, 4)
-        indexes = peakutils.indexes(ys, thres=thres)
+        indexes = np.array(peakutils.indexes(ys, thres=thres))
         return len(indexes)
 
     def showPlot(self): 
@@ -121,4 +122,4 @@ if __name__ == '__main__':
             rawdata = f.read()
         print(filepath)
         log = Log(rawdata)
-        log.showPlot()
+        log.getNumPeaks("xAccl", 0.5)
