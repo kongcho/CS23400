@@ -11,6 +11,7 @@ from nfft import ndft
 
 class Log:
     measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
+    types = ["Jumping", "Standing", "Walking", "Driving"]
 
     def __init__(self, rawdata):
         if isinstance(rawdata, basestring):
@@ -128,7 +129,7 @@ class Log:
 #                , self.getFreqs(ys)
 #                , np.std(np.std(ys))
 #                , np.std(ys)
-                , self.getAmplitude(ylabel)
+#                , self.getAmplitude(ylabel)
 #                , self.getPeriod(sp.signal.lfilter([1.0/10]*len(ys), 1, ys), xs)
         ]
 
