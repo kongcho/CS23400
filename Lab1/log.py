@@ -6,6 +6,7 @@ import numpy as np
 from pylab import fft
 import operator
 from nfft import nfft
+from scipy.signal import savgol_filter
 import peakutils
 import os
 
@@ -47,9 +48,10 @@ class Log:
         ## TODO
         return fft(self.__dict__[ylabel])
 
-    def getNumPeaks(self, ylabel):
-        cb = np.array(self.__dict__[ylabel])
-        indexes = peakutils.indexes(cb, thres=0.5)
+    def getNumPeaks(self, ylabel, thres):
+        ys = np.array(self.__dict__[ylabel])
+        ys = savgol_filter(ys, 5, 4)
+        indexes = peakutils.indexes(ys, thres=thres)
         return len(indexes)
 
     def showPlot(self): 
@@ -90,30 +92,25 @@ class Log:
         ## TODO: likelihood that the period guess was correct
         return 0
 
-    def getMeasurementInfo(self, ylabel):
+    def getMeasurementInfo(self, ylabel, thres):
         ## TODO: you may want to add to/modify this
         ys = self.__dict__[ylabel]
         ymax = max(ys)
         ymin = min(ys)
-        yft = self.getFreq(ylabel)
-        ftMaxIndex = np.argmax(yft)
-        period = self.times[ftMaxIndex]
-        if period > 15:
-            period = 0.
-        ftMaxVal = np.max(yft)
-        return [ymax, ymin, self.getNumPeaks(ylabel)]
+        numPeaks = self.getNumPeaks(ylabel, thres)
+        return [ymax, ymin, numPeaks]
 
     def getAllMeasurements(self):
         ## TODO: you may want to modify this
         ret = []
         for ylabel in self.measurements:
-            ret += self.getMeasurementInfo(ylabel)
+            ret += self.getMeasurementInfo(ylabel, thres)
         return ret
 
-    def getMultipleMeasurements(log, measArr):
+    def getMultipleMeasurements(log, measArr, thres):
         points = []
         for ylabel in measArr:
-            points += log.getMeasurementInfo(ylabel)
+            points += log.getMeasurementInfo(ylabel, thres)
         return points
 
 if __name__ == '__main__':
