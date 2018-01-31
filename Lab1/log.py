@@ -45,7 +45,7 @@ class Log:
 
     def getFreq(self, ylabel):
         ## TODO
-        return 0
+        return fft(self.__dict__[ylabel])
 
     def getNumPeaks(self, ylabel):
         cb = np.array(self.__dict__[ylabel])
@@ -110,6 +110,12 @@ class Log:
             ret += self.getMeasurementInfo(ylabel)
         return ret
 
+    def getMultipleMeasurements(log, measArr):
+        points = []
+        for ylabel in measArr:
+            points += log.getMeasurementInfo(ylabel)
+        return points
+
 if __name__ == '__main__':
     folder = "logs/"
     for file in os.listdir(folder):
@@ -118,6 +124,4 @@ if __name__ == '__main__':
             rawdata = f.read()
         print(filepath)
         log = Log(rawdata)
-        for ylabel in log.measurements:
-            print(ylabel)
-            print(log.getNumPeaks(ylabel))
+        log.showPlot()

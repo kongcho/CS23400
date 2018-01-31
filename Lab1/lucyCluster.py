@@ -25,50 +25,48 @@ def comboMeas(log, measArr):
 ylabels = ["xGyro", "zAccl", "yGyro", "yAccl"]
 
 def testMultipleVars(logs, ylabels):
-    points = map(lambda x: comboMeas(x, ylabels), logs)
+    points = map(lambda x: x.getMultipleMeasurements(ylabels), logs)
     kmeans = KMeans(n_clusters=2, random_state=0).fit(points)
     labels = kmeans.labels_
     # print(ylabels)
     # print(labels)
     return labels
 
-def checkGroundTruth(logs, labels):
+def checkGroundTruth(logs, labels, expected):
+    if sum(labels) > len(labels) // 2:
+        for i in range(len(labels)):
+            labels[i] = 1 - labels[i]
     res = {}
     if (len(logs) != len(labels)):
         return 
     for i in range(len(logs)):
+        unexpected = 1
+        if logs[i].type == expected and labels[i] == 1:
+            unexpected = 0
+        if logs[i].type != expected and labels[i] == 0:
+            unexpected = 0
         if logs[i].type in res:
-            res[logs[i].type] += labels[i]
+            res[logs[i].type] += unexpected
         else:
-            res[logs[i].type] = labels[i]
+            res[logs[i].type] = unexpected
     return res
 
-def perfectFit(logs,labels):
-    groundTruth = checkGroundTruth(logs, labels)
-    numZero = 0
-    nonZeroCategory = ""
-    for category in groundTruth:
-        if groundTruth[category] == 0:
-            numZero += 1
-        else:
-            nonZeroCategory = category
-    numPositives = 0
-    for log in logs:
-        if log.type == nonZeroCategory:
-            numPositives += 1
-    if numZero == len(groundTruth) - 1 and numPositives == groundTruth[nonZeroCategory]:
-        return nonZeroCategory
-    return None
+def perfectFit(logs, labels, expected):
+    groundTruth = checkGroundTruth(logs, labels, expected)
+    for g in groundTruth:
+        if groundTruth[g] != 0:
+            return False
+    return True
 
-def checkCombos(logs):
-    for i in range(1,len(measurements) + 1):
-        for ylabels in combinations(np.array(measurements), i):
-            labels = testMultipleVars(logs, ylabels)
-            print(ylabels, labels)
-            category = perfectFit(logs, labels)
-            if category:
-                print("THIS IS IT", category, ylabels)
-                return category, ylabels
+def checkCombos(logs, categories):
+    for expected in categories:
+        for i in range(1,len(measurements) + 1):
+            for ylabels in combinations(np.array(measurements), i):
+                labels = testMultipleVars(logs, ylabels)
+                print(ylabels, labels)
+                if perfectFit(logs, labels, expected):
+                    print("THIS IS IT", expected, ylabels)
+                    return expected, ylabels
 
 def getPrediction(log, folder, categories, ylabels):
     logs = parseFolderSelected(folder,categories)
@@ -101,7 +99,7 @@ def predictNewPoint(point, folder):
 folder = "./data/"
 categories = ["Walking", "Jumping", "Driving", "Standing"]
 
-logs = parseFolder(folder)
+# logs = parseFolder(folder)
 # checkCombos(logs)
 
 # for log in logs:
@@ -111,23 +109,25 @@ logs = parseFolder(folder)
 
 # logs = parseFolder(folder)
 
-labels = testMultipleVars(logs, ['xGyro', 'xAccl', 'zAccl'])
-gt = checkGroundTruth(logs, labels)
-print(labels)
-print(gt)
+# labels = testMultipleVars(logs, ['xGyro', 'xAccl', 'zAccl'])
+# gt = checkGroundTruth(logs, labels)
+# print(labels)
+# print(gt)
 
-logs = parseFolderSelected(folder, ["Driving","Walking","Standing"])
+categories = ["Driving","Walking","Standing"]
+logs = parseFolderSelected(folder, categories)
 # checkCombos(logs)
 
 labels = testMultipleVars(logs, ['yGyro', 'xMag', 'yAccl', 'yMag'])
-gt = checkGroundTruth(logs, labels)
+gt = checkGroundTruth(logs, labels, "Standing")
 print(labels)
 print(gt)
 
-logs = parseFolderSelected(folder, ["Driving","Walking"])
-# checkCombos(logs)
+# categories = ["Driving","Walking"]
+# logs = parseFolderSelected(folder, categories)
+# checkCombos(logs, categories)
 
-labels = testMultipleVars(logs, ['xGyro', 'yAccl'])
-gt = checkGroundTruth(logs, labels)
-print(labels)
-print(gt)
+# labels = testMultipleVars(logs, ['xGyro', 'yAccl'])
+# gt = checkGroundTruth(logs, labels)
+# print(labels)
+# print(gt)
