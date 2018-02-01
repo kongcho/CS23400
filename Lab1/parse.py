@@ -11,7 +11,9 @@ def parseFile(filepath):
     for rd in rawdata:
         log = Log(rd)
         #print(log.getAllMeasurements())
-        log.showPlot()
+        print(log.speed())
+        #print(log.getAvgSpeed())
+        #log.showPlot()
         logs.append(log)
 
     return logs
@@ -24,5 +26,5 @@ def parseFolder(folderpath):
 # ## TODO: There may be better ways to display this
 
 if __name__ == '__main__':
-    filepath = "./data/activity-dataset-Jumping.txt"
+    filepath = "./data/activity-dataset-Driving.txt"
     parseFile(filepath)

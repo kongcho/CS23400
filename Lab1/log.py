@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import ast
+import math
 import pprint
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.signal as signal
-from numpy.nfft import nfft
+from nfft import nfft
+import scipy as sp
 from pylab import fft
 
 class Log:
@@ -152,6 +153,19 @@ class Log:
 
         periods = self.getPeriods(ylabel)
         return np.var(periods)
+
+    def speed(self):
+        # calculates speed of the driving car
+        # Integrate the acceleration of each axis then 
+        # add together the velocity vectors, and finally take the magnitude.
+
+        xaccel = self.xAccl
+        yaccel = self.yAccl
+        times = self.times
+        x_velocity = sp.integrate.simps(xaccel, x=times)
+        y_velocity = sp.integrate.simps(yaccel, x=times)
+        speed = abs(math.sqrt(x_velocity*x_velocity + y_velocity*y_velocity))
+        return speed
 
     def getMeasurementInfo(self, ylabel):
         # From CenceMe Article:
