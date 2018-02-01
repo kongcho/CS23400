@@ -96,23 +96,13 @@ class Log:
         ftMaxVal = np.max(yft)
         return ftMaxVal
 
-    def getNumPeaks(self, ylabel):
+    def getNumPeaks(self, ylabel, thres=0.3):
         cb = np.array(self.__dict__[ylabel])
-#        filtered = sp.signal.lfilter([1.0/10]*len(cb), 1, cb)
-#        filtered = sp.signal.savgol_filter(cb, 201, 3)
-        threshold = 0.5
-        indexes = peakutils.indexes(cb, thres=threshold)
+        cb = sp.signal.lfilter([1.0/10]*len(cb), 1, cb)
+#        filtered = sp.signal.savgol_filter(cb, 5, 4)
+        indexes = peakutils.indexes(cb, thres)
 #        print(len(indexes))
         return len(indexes)
-
-    def getAmplitude(self, ylabel):
-        ## TODO: find average amplitude of measurement
-        ys = self.__dict__[ylabel]
-        return np.average(ys)
-
-    def getPeriodVariance(self, ylabel):
-        ## TODO: likelihood that the period guess was correct
-        return 0
 
     def getMeasurementInfo(self, ylabel):
         ## TODO: you may want to add to/modify this
@@ -132,6 +122,26 @@ class Log:
 #                , self.getAmplitude(ylabel)
 #                , self.getPeriod(sp.signal.lfilter([1.0/10]*len(ys), 1, ys), xs)
         ]
+
+    def getMeasurementInfoAccl(self, ylabel, thres):
+        ## TODO: you may want to add to/modify this
+        xs = self.times
+        ys = self.__dict__[ylabel]
+        ymax = max(ys)
+        ymin = min(ys)
+        return [ymax
+                , ymin
+                , self.getNumPeaks(ylabel, thres)
+#                , np.std(np.std(ys))
+#                , np.max(sp.signal.find_peaks_cwt(ys, range(0, 150, 20)))
+#                , np.std(np.gradient(ys))
+#                , self.getFreqs(ys)
+#                , np.std(np.std(ys))
+#                , np.std(ys)
+#                , self.getAmplitude(ylabel)
+#                , self.getPeriod(sp.signal.lfilter([1.0/10]*len(ys), 1, ys), xs)
+        ]
+
 
     def getAllMeasurements(self):
         ## TODO: you may want to modify this

@@ -124,6 +124,13 @@ def comboMeasFast(log, measArr):
         points += [log.getMeasurementInfo(ylabel)]
     return points
 
+def comboMeasFastAccl(log, measArr, thres):
+    points = []
+    for ylabel in measArr:
+        points += [log.getMeasurementInfoAccl(ylabel, thres)]
+    return points
+
+
 def getPredictionFast(point, all_points, all_ylabels, ylabels):
     indexes = []
     for y in ylabels:
@@ -147,13 +154,13 @@ def predictNewPointFast(log, points, ylabels, all_points):
     types = Log.types[:]
     point = comboMeasFast(log, ylabels)
     prediction = getPredictionFast(point, points, ylabels, \
-                                   ['xAccl', 'zAccl', 'xGyro'])
+                                   ["xGyro", "zAccl", "yGyro", "yAccl"])
     if prediction == 1:
         return "Jumping"
     types.remove("Jumping")
     points = getRightLogs(all_points, types)
     prediction = getPredictionFast(point, points, ylabels, \
-                                   ['xMag', 'yMag', 'yGyro', 'yAccl'])
+                                   ['yGyro', 'xMag', 'yAccl', 'yMag'])
     if prediction == 0:
         return "Standing"
     types.remove("Standing")
@@ -165,7 +172,29 @@ def predictNewPointFast(log, points, ylabels, all_points):
     if prediction == 1:
         return "Walking"
 
-def predictFast(test_folder, folder):
+def combos(log, points, ylabels, all_points, arr):
+    types = Log.types[:]
+    point = comboMeasFast(log, ylabels)
+    prediction = getPredictionFast(point, points, ylabels, \
+                                   arr[0])
+    if prediction == 1:
+        return "Jumping"
+    types.remove("Jumping")
+    points = getRightLogs(all_points, types)
+    prediction = getPredictionFast(point, points, ylabels, \
+                                   arr[1])
+    if prediction == 1:
+        return "Driving"
+    types.remove("Driving")
+    points = getRightLogs(all_points, types)
+    prediction = getPredictionFast(point, points, ylabels, \
+                                   arr[2])
+    if prediction == 0:
+        return "Standing"
+    if prediction == 1:
+        return "Walking"
+
+def predictCombos(test_folder, folder, arrs):
     wrongs = 0
     types = Log.types
     ylabels = ["xAccl", "yAccl", "zAccl"]
@@ -174,7 +203,29 @@ def predictFast(test_folder, folder):
     for key in all_logs:
         all_points[key] = map(lambda x: comboMeasFast(x, ylabels), all_logs[key])
     points = getRightLogs(all_points, types)
-    test_logs = parseTestFolder(test_folder)
+    test_logs = parseFolder(test_folder)
+    for log in test_logs:
+        result = combos(log, points, ylabels, all_points, arrs)
+        if log.type != result:
+            wrongs += 1
+            print "WRONG:\t",
+        else:
+            print "\t",
+        print("Actual: " + str(log.type) + "\tPrediction: " + (result))
+    total = len(test_logs)
+    print("wrongs: " + str(wrongs) + " out of " + str(total))
+    return (wrongs, arrs)
+
+def predictFast(test_folder, folder):
+    wrongs = 0
+    types = Log.types
+    ylabels = Log.measurements
+    all_logs = parseFolderSelectedFast(folder, types)
+    all_points = {}
+    for key in all_logs:
+        all_points[key] = map(lambda x: comboMeasFast(x, ylabels), all_logs[key])
+    points = getRightLogs(all_points, types)
+    test_logs = parseFolder(test_folder)
     for log in test_logs:
         result = predictNewPointFast(log, points, ylabels, all_points)
         print("Actual: %s" % log.type)
@@ -207,9 +258,11 @@ def test_vars(folder):
 
 
 def getFastResults():
-    test_folder = "./test"
+    test_folder = "./data"
     folder = "./data"
-    predictFast(test_folder, folder)
+
+    arrs = [["yAccl", "xAccl"],["yAccl"],["yAccl"]]
+    predictCombos(test_folder, folder, arrs)
 
 def getOldResults():
     folder = "./data"
