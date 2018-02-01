@@ -13,7 +13,7 @@ import os
 
 class Log:
     measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
-
+    types = ["Jumping", "Driving", "Standing", "Walking"]
     def __init__(self, rawdata):
         if isinstance(rawdata, basestring):
             rawdata = ast.literal_eval(rawdata)
@@ -108,10 +108,16 @@ class Log:
             ret += self.getMeasurementInfo(ylabel, thres)
         return ret
 
-    def getMultipleMeasurements(log, measArr, thres):
+    def getMultipleMeasurements(self, measArr, thres):
         points = []
         for ylabel in measArr:
-            points += log.getMeasurementInfo(ylabel, thres)
+            points += self.getMeasurementInfo(ylabel, thres)
+        return points
+
+    def getMultMeasFast(self, measArr, thres):
+        points = []
+        for ylabel in measArr:
+            points += [self.getMeasurementInfo(ylabel, thres)]
         return points
 
 if __name__ == '__main__':

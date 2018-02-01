@@ -32,6 +32,28 @@ def parseFolderSelected(folderpath, types):
                 continue
     return logs
 
+
+def parseFolderSelectedFast(folderpath, types):
+    logs = {}
+    for file in os.listdir(folderpath):
+        curr_types = []
+        for t in types:
+            if t in file:
+                filepath = os.path.join(folderpath, file)
+                curr_types += parseFile(filepath)
+                logs[t] = curr_types
+    return logs
+
+
+def parseTestFolder(folderpath):
+    logs = []
+    for file in os.listdir(folderpath):
+        filepath = os.path.join(folderpath, file)
+        with open(filepath) as f:
+            rawdata = ast.literal_eval(f.read())
+            logs.append(Log(rawdata))
+    return logs
+
 ## TODO: There may be better ways to display this
 
 if __name__ == '__main__':
