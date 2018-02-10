@@ -3,6 +3,32 @@ import ast
 import pprint
 import matplotlib.pyplot as plt
 import numpy as np
+from math import sqrt
+
+def get_speed(times, xs, ys):
+    vs = []
+    for i in range(len(times) - 1):
+        d = sqrt((xs[i+1]-xs[i])**2 + (ys[i+1]-ys[i])**2)
+        t = times[i+1]-times[i]
+        vs.append(d/t)
+    return np.average(vs)
+
+class Mac:
+    def __init__(self, mac, logs):
+        self.dic = {}
+        d0s = []
+        ds = []
+        rsses = []
+        for log in logs:
+            for i in range(len(log.log["mac"])):
+                if mac == log.log["mac"][i]:
+                    d0s.append(log.d0)
+                    ds.append(log.ds[i])
+                    rsses.append(log.log["rss"][i])
+        self.mac = mac
+        self.dic["d0s"] = d0s
+        self.dic["ds"] = ds
+        self.dic["rsses"] = rsses
 
 class Log:
     measurements = ["loc_x", "loc_y", "rss", "mac"]
@@ -13,7 +39,7 @@ class Log:
         times = []
         time0 = rawdata[0]['time']
         for dictionary in rawdata:
-            times.append((dictionary['time'] - time0))
+            times.append(dictionary['time'] - time0)
         self.log["times"] = times
 
         for ylabel in self.measurements:
@@ -22,13 +48,11 @@ class Log:
                 m.append(dictionary[ylabel])
             self.log[ylabel] = m
 
-    def __str__(self):
-        ret = ""
-        ret += "Type: %s\n" % (self.type)
-        for y in self.__dict__:
-            m = self.__dict__[y]
-            ret += "%s:\n\t[%s,%s,%s,...,%s]\n" % (y,m[0],m[1],m[2],m[-1])
-        return ret
+        self.spd = get_speed(self.log["times"], self.log["loc_x"], self.log["loc_y"])
+
+        self.ds = [self.spd * t for t in self.log["times"]]
+
+        self.d0 = self.ds[0]
 
     def showPlot(self):
         i=1
