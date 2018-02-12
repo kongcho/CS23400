@@ -16,17 +16,20 @@ def get_speed(times, xs, ys):
 class Mac:
     def __init__(self, mac, logs):
         self.dic = {}
-        d0s = []
+#        d0s = []
         ds = []
         rsses = []
+        logds = []
         for log in logs:
             for i in range(len(log.log["mac"])):
                 if mac == log.log["mac"][i]:
-                    d0s.append(log.d0)
+ #                   d0s.append(log.d0)
                     ds.append(log.ds[i])
+                    logds.append(math.log(log.ds[i]))
                     rsses.append(log.log["rss"][i])
         self.mac = mac
-        self.dic["d0s"] = d0s
+#        self.dic["d0s"] = d0s
+        self.dic["logds"] = logds
         self.dic["ds"] = ds
         self.dic["rsses"] = rsses
 
