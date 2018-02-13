@@ -11,12 +11,15 @@ import peakutils
 import peakutils.plot
 import os
 
+types = ["Driving", "Jumping", "Standing", "Walking"]
+files = ["./data/activity-dataset-" + activity + ".txt" for activity in types]
+
 class Log:
     measurements = ["xGyro","yGyro","xAccl","xMag","zAccl","yAccl","zGyro","yMag","zMag"]
     types = ["Jumping", "Driving", "Standing", "Walking"]
     def __init__(self, rawdata):
-        if isinstance(rawdata, basestring):
-            rawdata = ast.literal_eval(rawdata)
+        # if isinstance(rawdata, basestring):
+        #     rawdata = ast.literal_eval(rawdata)
 
         self.type = rawdata['type']
 
@@ -55,25 +58,33 @@ class Log:
         indexes = np.array(peakutils.indexes(ys, thres=thres))
         return len(indexes)
 
-    def showPlot(self): 
+    def showPlot(self):
         i=1
         plt.figure(1).set_size_inches(24,48)
         for ylabel in self.measurements:
             m = self.__dict__[ylabel]
             plt.subplot(len(self.measurements),2,i)
-            i += 1   
+            i += 1
             plt.plot(self.times,m,label=ylabel)
             plt.xlabel('Time (s)')
             plt.title("magnitude for %s %s" % (self.type, ylabel))
             plt.grid(True)
             plt.yticks([])
-                
+
             plt.subplot(len(self.measurements),2,i)
+<<<<<<< HEAD
             i += 1 
             
             yf = self.getFreq(ylabel)
             
             plt.plot(self.times, yf)
+=======
+            i += 1
+
+            xf, yf = self.getFreq(ylabel)
+
+            plt.plot(xf, np.abs(yf))
+>>>>>>> 980353cffe613e7eb2058a585a3a7870786b8b8d
             plt.grid()
             plt.title("freq analyisis for %s %s" % (self.type, ylabel))
             plt.yticks([])
@@ -108,6 +119,7 @@ class Log:
             ret += self.getMeasurementInfo(ylabel, thres)
         return ret
 
+<<<<<<< HEAD
     def getMultipleMeasurements(self, measArr, thres):
         points = []
         for ylabel in measArr:
@@ -129,3 +141,16 @@ if __name__ == '__main__':
         print(filepath)
         log = Log(rawdata)
         log.getNumPeaks("xAccl", 0.5)
+=======
+if __name__ == '__main__':
+    all_logs = []
+    for filenames in files:
+        logs = []
+        with open(filenames) as f:
+            rawdata = ast.literal_eval(f.read())
+        for dictionary in rawdata:
+            logs.append(Log(dictionary))
+        all_logs.append(logs)
+
+    all_logs[0][0].showPlot()
+>>>>>>> 980353cffe613e7eb2058a585a3a7870786b8b8d
