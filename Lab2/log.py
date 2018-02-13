@@ -22,6 +22,8 @@ def get_speed_1d(times, xs):
     return np.average(vs)
 
 class Mac:
+    vals = ["ds", "xs", "ys", "logds", "logxs", "logys"]
+
     def __init__(self, mac, logs):
         self.dic = {}
 #        d0s = []
@@ -35,7 +37,7 @@ class Mac:
         for logg in logs:
             for i in range(len(logg.log["mac"])):
                 if mac == logg.log["mac"][i]:
-                    rsses.append(logg.log["rss"][i])
+                    rsses.append(int(logg.log["rss"][i]))
  #                   d0s.append(log.d0)
                     ds.append(logg.ds[i])
                     xs.append(logg.xs[i])
@@ -57,6 +59,32 @@ class Mac:
         self.dic["logxs"] = logxs
         self.dic["logys"] = logys
         self.dic["rsses"] = rsses
+
+    def showPlot(self):
+        i=1
+        plt.figure(1).set_size_inches(24,48)
+        for ylabel in vals:
+            m = self.dic[ylabel]
+            plt.subplot(len(vals),1,i)
+            i += 1
+            plt.scatter(self.dic["rsses"],m,c='r',label=ylabel)
+            plt.xlabel('RSS')
+            plt.title("magnitude for %s" % ylabel)
+            plt.grid(True)
+            plt.yticks([])
+        plt.tight_layout()
+        plt.show()
+
+    def getMeasurementInfo(self, ylabel):
+        ## TODO: you may want to add to/modify this
+        return []
+
+    def getAllMeasurements(self):
+        ## TODO: you may want to modify this
+        ret = []
+        for ylabel in self.measurements:
+            ret += self.getMeasurementInfo(ylabel)
+        return ret
 
 class Log:
     measurements = ["loc_x", "loc_y", "rss", "mac"]
@@ -85,31 +113,6 @@ class Log:
         self.xs = [self.spdx * t for t in self.log["times"]]
         self.ys = [self.spdy * t for t in self.log["times"]]
 
-    def showPlot(self):
-        i=1
-        plt.figure(1).set_size_inches(24,48)
-        for ylabel in self.measurements:
-            m = self.__dict__[ylabel]
-            plt.subplot(len(self.measurements),2,i)
-            i += 1
-            plt.plot(self.__dict__["times"],m,label=ylabel)
-            plt.xlabel('Time (s)')
-            plt.title("magnitude for %s %s" % (self.type, ylabel))
-            plt.grid(True)
-            plt.yticks([])
-        plt.tight_layout()
-        plt.show()
-
-    def getMeasurementInfo(self, ylabel):
-        ## TODO: you may want to add to/modify this
-        return []
-
-    def getAllMeasurements(self):
-        ## TODO: you may want to modify this
-        ret = []
-        for ylabel in self.measurements:
-            ret += self.getMeasurementInfo(ylabel)
-        return ret
 
 if __name__ == '__main__':
     pass
