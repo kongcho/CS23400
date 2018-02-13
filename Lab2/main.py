@@ -1,5 +1,8 @@
+#!/usr/bin/env python
+
 from parse import parseFolder
-from log import Log, Mac
+from log import Log
+from mac import Mac
 import scipy.optimize
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,8 +22,8 @@ def linear_func(x, m, c):
     return m*np.asarray(x) + c
 
 def least_sq(mac):
-    xs = mac.dic["logxs"]
-    ys = mac.dic["rsses"]
+    xs = mac.logxs
+    ys = mac.rsses
     for i in range(1):
         plt.scatter(xs, ys, c='r')
     popt, pcov = scipy.optimize.curve_fit(linear_func, xs, ys)
