@@ -5,13 +5,84 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
+def get_distance(x1, x0, y1, y0):
+    return np.sqrt((x1 - x0)**2 + (y1 - y0)**2)
+
+def get_abs_d_2d(times, xs, ys):
+    min_i = 0
+    length = len(times) - 1
+    some_vs = []
+    some_abs_ds = []
+    all_abs_ds = []
+    v0 = get_distance(xs[1], xs[0], ys[1], ys[0])/(times[1] - times[0])
+    for i in range(length):
+        d = get_distance(xs[i+1], xs[i], ys[i+1], ys[i])
+        t = times[i+1] - times[i]
+        v = d/t
+        if (v0 - 0.005) <= v <= (v0 + 0.005):
+            some_vs.append(v)
+            if i+1 == length:
+                vavg = np.average(some_vs)
+                print(v0)
+                print(vavg)
+                print(v)
+                some_abs_ds = [vavg * t for t in times[min_i:i+2]]
+                all_abs_ds += some_abs_ds
+        else:
+            vavg = np.average(some_vs)
+            print(v0)
+            print(vavg)
+            print(v)
+            some_abs_ds = [vavg * t for t in times[min_i:i]]
+            all_abs_ds += some_abs_ds
+            v0 = v
+            some_vs = [v0]
+            min_i = i
+    return all_abs_ds
+
+def get_abs_d_1d(times, xs):
+    min_i = 0
+    length = len(times) - 1
+    some_vs = []
+    some_abs_ds = []
+    all_abs_ds = []
+    v0 = (xs[1] - xs[0])/(times[1] - times[0])
+    for i in range(length):
+        d = abs(xs[i+1] - xs[i])
+        t = times[i+1] - times[i]
+        v = d/t
+        if (v0 - 0.005) <= v <= (v0 + 0.005):
+            some_vs.append(v)
+            if i+1 == length:
+                vavg = np.average(some_vs)
+                print(i)
+                print(v0)
+                print(vavg)
+                print(v)
+
+                some_abs_ds = [vavg * t for t in times[min_i:i+2]]
+                all_abs_ds += some_abs_ds
+        else:
+            vavg = np.average(some_vs)
+            print(i)
+            print(v0)
+            print(vavg)
+            print(v)
+
+            some_abs_ds = [vavg * t for t in times[min_i:i]]
+            all_abs_ds += some_abs_ds
+            v0 = v
+            some_vs = [v0]
+            min_i = i
+    return all_abs_ds
+
 def get_speed_2d(times, xs, ys):
     vs = []
     for i in range(len(times) - 1):
-        d = math.sqrt((xs[i+1]-xs[i])**2 + (ys[i+1]-ys[i])**2)
+        d = get_distance(xs[i+1], xs[i], ys[i+1], ys[i])
         t = times[i+1]-times[i]
         vs.append(d/t)
-    return np.average(vs)
+    return vs[20]
 
 def get_speed_1d(times, xs):
     vs = []
@@ -19,53 +90,36 @@ def get_speed_1d(times, xs):
         d = abs(xs[i+1]-xs[i])
         t = times[i+1]-times[i]
         vs.append(d/t)
-    return np.average(vs)
+    return vs[20]
 
 class Mac:
-    vals = ["ds", "xs", "ys", "logds", "logxs", "logys"]
+    vals = ["ds", "xs", "ys"]
 
     def __init__(self, mac, logs):
         self.dic = {}
-#        d0s = []
         xs = []
         ys = []
         ds = []
         rsses = []
-        logds = []
-        logxs = []
-        logys = []
         for logg in logs:
             for i in range(len(logg.log["mac"])):
                 if mac == logg.log["mac"][i]:
                     rsses.append(int(logg.log["rss"][i]))
- #                   d0s.append(log.d0)
                     ds.append(logg.ds[i])
                     xs.append(logg.xs[i])
                     ys.append(logg.ys[i])
-                    if i == 0:
-                        logds.append(0)
-                        logxs.append(0)
-                        logys.append(0)
-                    else:
-                        logds.append(math.log(logg.ds[i]))
-                        logxs.append(math.log(logg.xs[i]))
-                        logys.append(math.log(logg.ys[i]))
         self.mac = mac
-#        self.dic["d0s"] = d0s
-        self.dic["ds"] = ds
-        self.dic["xs"] = xs
-        self.dic["ys"] = ys
-        self.dic["logds"] = logds
-        self.dic["logxs"] = logxs
-        self.dic["logys"] = logys
-        self.dic["rsses"] = rsses
+        self.dic["ds"] = np.asarray(ds)
+        self.dic["xs"] = np.asarray(xs)
+        self.dic["ys"] = np.asarray(ys)
+        self.dic["rsses"] = np.asarray(rsses)
 
     def showPlot(self):
         i=1
         plt.figure(1).set_size_inches(24,48)
-        for ylabel in vals:
+        for ylabel in self.vals:
             m = self.dic[ylabel]
-            plt.subplot(len(vals),1,i)
+            plt.subplot(len(self.vals),1,i)
             i += 1
             plt.scatter(self.dic["rsses"],m,c='r',label=ylabel)
             plt.xlabel('RSS')
@@ -105,14 +159,21 @@ class Log:
             self.log[ylabel] = m
 
         self.spd = get_speed_2d(self.log["times"], self.log["loc_x"], self.log["loc_y"])
-        self.ds = [self.spd * t for t in self.log["times"]]
-        self.d0 = self.ds[0]
-
         self.spdx = get_speed_1d(self.log["times"], self.log["loc_x"])
         self.spdy = get_speed_1d(self.log["times"], self.log["loc_y"])
+        self.ds = [self.spd * t for t in self.log["times"]]
         self.xs = [self.spdx * t for t in self.log["times"]]
         self.ys = [self.spdy * t for t in self.log["times"]]
-
+        # print(self.ds[0:10] + self.ds[-5:-1])
+        # print(self.xs[0:15] + self.ds[-5:-1])
+        # print(self.ys[0:10] + self.ds[-5:-1])
+        self.ds = get_abs_d_2d(self.log["times"], self.log["loc_x"], self.log["loc_y"])
+        self.xs = get_abs_d_1d(self.log["times"], self.log["loc_x"])
+        self.ys = get_abs_d_1d(self.log["times"], self.log["loc_y"])
+        # print(self.ds[0:10] + self.ds[-5:-1])
+        # print(self.xs[0:15] + self.ds[-5:-1])
+        # print(self.ys[0:10] + self.ds[-5:-1])
+        print("### END")
 
 if __name__ == '__main__':
     pass
