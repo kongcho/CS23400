@@ -14,30 +14,35 @@ def get_abs_d_2d(times, xs, ys):
     some_vs = []
     some_abs_ds = []
     all_abs_ds = []
+    diff_vs = []
     v0 = get_distance(xs[1], xs[0], ys[1], ys[0])/(times[1] - times[0])
     for i in range(length):
         d = get_distance(xs[i+1], xs[i], ys[i+1], ys[i])
-        t = times[i+1] - times[i]
+        t = abs(times[i+1] - times[i])
         v = d/t
+        if i+1 == length:
+            vavg = np.average(some_vs)
+            # print(v0)
+            # print(vavg)
+            # print(v)
+            diff_vs.append((i, vavg))
+            some_abs_ds = [vavg * t for t in times[min_i:]]
+            all_abs_ds += some_abs_ds
+            continue
         if (v0 - 0.005) <= v <= (v0 + 0.005):
             some_vs.append(v)
-            if i+1 == length:
-                vavg = np.average(some_vs)
-                print(v0)
-                print(vavg)
-                print(v)
-                some_abs_ds = [vavg * t for t in times[min_i:i+2]]
-                all_abs_ds += some_abs_ds
         else:
             vavg = np.average(some_vs)
-            print(v0)
-            print(vavg)
-            print(v)
+            # print(v0)
+            # print(vavg)
+            # print(v)
+            diff_vs.append((i, vavg))
             some_abs_ds = [vavg * t for t in times[min_i:i]]
             all_abs_ds += some_abs_ds
             v0 = v
             some_vs = [v0]
             min_i = i
+    print(diff_vs)
     return all_abs_ds
 
 def get_abs_d_1d(times, xs):
@@ -46,34 +51,36 @@ def get_abs_d_1d(times, xs):
     some_vs = []
     some_abs_ds = []
     all_abs_ds = []
-    v0 = (xs[1] - xs[0])/(times[1] - times[0])
+    diff_vs = []
+    v0 = abs(xs[1] - xs[0])/(times[1] - times[0])
     for i in range(length):
         d = abs(xs[i+1] - xs[i])
-        t = times[i+1] - times[i]
+        t = abs(times[i+1] - times[i])
         v = d/t
-        if (v0 - 0.005) <= v <= (v0 + 0.005):
+        if (i + 1) == length:
+            vavg = np.average(some_vs)
+            # print(i)
+            # print(v0)
+            # print(vavg)
+            # print(v)
+            diff_vs.append((i, vavg))
+            some_abs_ds = [vavg * t for t in times[min_i:]]
+            all_abs_ds += some_abs_ds
+        elif (v0 - 0.005) <= v <= (v0 + 0.005):
             some_vs.append(v)
-            if i+1 == length:
-                vavg = np.average(some_vs)
-                print(i)
-                print(v0)
-                print(vavg)
-                print(v)
-
-                some_abs_ds = [vavg * t for t in times[min_i:i+2]]
-                all_abs_ds += some_abs_ds
         else:
             vavg = np.average(some_vs)
-            print(i)
-            print(v0)
-            print(vavg)
-            print(v)
-
+            # print(i)
+            # print(v0)
+            # print(vavg)
+            # print(v)
+            diff_vs.append((i, vavg))
             some_abs_ds = [vavg * t for t in times[min_i:i]]
             all_abs_ds += some_abs_ds
             v0 = v
             some_vs = [v0]
             min_i = i
+    print(diff_vs)
     return all_abs_ds
 
 def get_speed_2d(times, xs, ys):
@@ -82,7 +89,7 @@ def get_speed_2d(times, xs, ys):
         d = get_distance(xs[i+1], xs[i], ys[i+1], ys[i])
         t = times[i+1]-times[i]
         vs.append(d/t)
-    return vs[20]
+    return np.average(vs) # vs[10]
 
 def get_speed_1d(times, xs):
     vs = []
@@ -90,7 +97,7 @@ def get_speed_1d(times, xs):
         d = abs(xs[i+1]-xs[i])
         t = times[i+1]-times[i]
         vs.append(d/t)
-    return vs[20]
+    return np.average(vs) #vs[15]
 
 class Mac:
     vals = ["ds", "xs", "ys"]
@@ -161,19 +168,24 @@ class Log:
         self.spd = get_speed_2d(self.log["times"], self.log["loc_x"], self.log["loc_y"])
         self.spdx = get_speed_1d(self.log["times"], self.log["loc_x"])
         self.spdy = get_speed_1d(self.log["times"], self.log["loc_y"])
+        # self.spdx = abs(self.log["loc_x"][-1] - self.log["loc_x"][0])/abs(self.log["times"][-1] - self.log["times"][0])
+        # self.spdy = abs(self.log["loc_y"][-1] - self.log["loc_y"][0])/abs(self.log["times"][-1] - self.log["times"][0])
         self.ds = [self.spd * t for t in self.log["times"]]
         self.xs = [self.spdx * t for t in self.log["times"]]
         self.ys = [self.spdy * t for t in self.log["times"]]
         # print(self.ds[0:10] + self.ds[-5:-1])
         # print(self.xs[0:15] + self.ds[-5:-1])
         # print(self.ys[0:10] + self.ds[-5:-1])
-        self.ds = get_abs_d_2d(self.log["times"], self.log["loc_x"], self.log["loc_y"])
-        self.xs = get_abs_d_1d(self.log["times"], self.log["loc_x"])
-        self.ys = get_abs_d_1d(self.log["times"], self.log["loc_y"])
+        # self.ds = get_abs_d_2d(self.log["times"], self.log["loc_x"], self.log["loc_y"])
+        # self.xs = get_abs_d_1d(self.log["times"], self.log["loc_x"])
+        # self.ys = get_abs_d_1d(self.log["times"], self.log["loc_y"])
         # print(self.ds[0:10] + self.ds[-5:-1])
         # print(self.xs[0:15] + self.ds[-5:-1])
         # print(self.ys[0:10] + self.ds[-5:-1])
-        print("### END")
+        # self.xs = [0.0 * t for t in self.log["times"][:3818]] + \
+        #           [0.275123503584 * t for t in self.log["times"][3818:11964]] + \
+        #           [0.508998360497 * t for t in self.log["times"][8624:]]
+        # print("### END")
 
 if __name__ == '__main__':
     pass
