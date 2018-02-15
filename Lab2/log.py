@@ -6,6 +6,16 @@ import numpy as np
 import math
 
 def get_distance(x1, x0, y1, y0):
+    """
+    Get Euclidean distance between two points
+    input:
+    x0 (float): first x coordinate
+    x1 (float): second x coordinate
+    y0 (float): first y coordinate
+    y1 (float): second y coordinate
+    return (float):
+    the Euclidean distance
+    """
     return np.sqrt((x1 - x0)**2 + (y1 - y0)**2)
 
 def process_times(t0, times):
@@ -14,7 +24,18 @@ def process_times(t0, times):
         new_ts.append(times[i] - t0)
     return new_ts
 
+# We ended up not using this method to get absolute distance
+#   because it was less accurate than average speed * time
 def get_abs_d_1d(times, xs):
+    """
+    get absolute distance in one dimension by computing average speed
+      for each path section and multiplying the change in time, and adding
+      the distance so far
+    inputs:
+    times (float): time since the log began
+    xs (float): x values
+    return (float): absolute distance
+    """
     min_i = 0
     length = len(times) - 1
     some_vs = []
@@ -34,7 +55,6 @@ def get_abs_d_1d(times, xs):
             some_vs.append(v)
         else:
             vavg = np.average(some_vs)
-            diff_vs.append((i, vavg))
             some_abs_ds = [last_d + vavg * t for t in process_times(times[min_i], times[min_i:i])]
             all_abs_ds += some_abs_ds
             last_d = some_abs_ds[-1]
@@ -43,15 +63,14 @@ def get_abs_d_1d(times, xs):
             min_i = i
     return all_abs_ds
 
-def get_speed_2d(times, xs, ys):
-    vs = []
-    for i in range(len(times) - 1):
-        d = get_distance(xs[i+1], xs[i], ys[i+1], ys[i])
-        t = times[i+1]-times[i]
-        vs.append(d/t)
-    return np.average(vs) 
-
 def get_speed_1d(times, xs):
+    """
+    get speed in one dimension
+    inputs:
+    times (float): time since the log began
+    xs (float): position values
+    return (float): average speed
+    """
     vs = []
     for i in range(len(times) - 1):
         d = abs(xs[i+1]-xs[i])
@@ -60,9 +79,21 @@ def get_speed_1d(times, xs):
     return np.average(vs)
 
 class Mac:
+    """
+    contains information for one trace and a given mac address
+    """
     vals = ["ds", "xs", "ys"]
 
     def __init__(self, mac, logs):
+        """
+        Mac constructor
+        input:
+        mac (string): the mac address
+        logs (list of log objects): logs for this mac address
+        result:
+        self.dic: dictionary of arrays from the log values
+            aggregated from the input logs
+        """
         self.dic = {}
         xs = []
         ys = []
@@ -94,9 +125,26 @@ class Mac:
         plt.show()
 
 class Log:
+    """
+    contains information from a log constructed from raw data
+    """
     measurements = ["loc_x", "loc_y", "rss", "mac"]
 
     def __init__(self, rawdata):
+        """
+        Constructor for log object
+        input:
+        rawdata (json): the raw data collected from the log
+        result:
+        self.log (dictionary of arrays)
+            times (list of floats): seconds since beginning the log 
+            measurements (list of floats): value logged 
+            - loc_x, loc_y, rss, mac
+        self.spdx (float): speed calculation for x
+        self.spdy (float): speed calculation for y
+        self.xs (float): x distance so far at each time step
+        self.ys (float): y distance so far at each time step
+        """
         self.log = {}
 
         times = []
@@ -111,6 +159,8 @@ class Log:
                 m.append(dictionary[ylabel])
             self.log[ylabel] = m
 
+        # We currently use the average speed for every consecutive points
+        #   because it ended up being the most accurate
         self.spdx = get_speed_1d(self.log["times"], self.log["loc_x"])
         self.spdy = get_speed_1d(self.log["times"], self.log["loc_y"])
         self.xs = [self.spdx * t for t in self.log["times"]]
