@@ -12,6 +12,13 @@ macs = ["8c:85:90:16:0a:a4", "ac:9e:17:7d:31:e8", "d8:c4:6a:50:e3:b1", "f8:cf:c5
 # P = C - glog(d)
 
 def get_macs(folder):
+    """
+    Get the mac addresses from a folder
+    inputs:
+    folder (string): the name of the folder containing logs
+    return: 
+    list of Mac objects based on the folder
+    """
     logs = parseFolder(folder)
     data = []
     for mac in macs:
@@ -19,6 +26,13 @@ def get_macs(folder):
     return data
 
 def get_macs_each(folder):
+    """
+    Get the mac addresses from a folder
+    inputs:
+    folder (string): the name of the folder containing logs
+    return: 
+    list of Mac objects based on the folder
+    """
     logs = parseFolder(folder)
     data = []
     for mac in macs:
