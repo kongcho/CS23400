@@ -14,6 +14,9 @@ We used the *scipy curve_fit function*  which uses non-linear least squares to f
 
 The known values are the RSS data points and the corresponding receiver x and y locations. We used these values to train our model to predict the four unknown parameters for each trace: c, g, and the location of the transmitter.
 
+## Running the code
+
+Run `python main.py`
 
 ## Results
 
