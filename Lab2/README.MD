@@ -19,16 +19,20 @@ The known values are the RSS data points and the corresponding receiver x and y 
 
 For the two locations we know, our model predicts these locations:
 
-```8c:85:90:16:0a:a4 = (1.7424648579719106, 2.9145329936775437)
+~~~~
+8c:85:90:16:0a:a4 = (1.7424648579719106, 2.9145329936775437)
 Average error: 7.66881981109
 Results error: 6.37773592822
 
 ac:9e:17:7d:31:e8 = (-1.4514753389253363, 9.3428035016914865)
 Average error: 4.25368568235
-Results error: 0.5912737598```
+Results error: 0.5912737598
+~~~~
 
 These are our predictions for the two unknown Mac Address locations:
 
-```d8:c4:6a:50:e3:b1 = (2.3336365498565548, 3.9552350511118233)
+~~~~
+d8:c4:6a:50:e3:b1 = (2.3336365498565548, 3.9552350511118233)
 
-f8:cf:c5:97:e0:9e = (1.8629801623605156, 4.8234596645366947)```
+f8:cf:c5:97:e0:9e = (1.8629801623605156, 4.8234596645366947)
+~~~~
