@@ -21,11 +21,10 @@ For the two locations we know, our model predicts these locations:
 
 8c:85:90:16:0a:a4  = (1.748, 2.914) 
 Error =  0.591  
-
-
+  
+  
 ac:9e:17:7d:31:e8  = (x,y) 
 Error =  6.373
-
 
 These are our predictions for the two unknown Mac Address locations:
 
