@@ -8,7 +8,7 @@ First, we parsed the data and stored each data trace into a log class. Then, we 
 
 ## Algorithm
 
-We used the scipy curve_fit function which uses non-linear least squares to fit our function to the data we collected. The equation we use is:
+We used the * *scipy curve_fit function* * which uses non-linear least squares to fit our function to the data we collected. The equation we use is:
 
 RSS = c - g * log(distance((rxx, txx),(rxy, txy))
 
@@ -19,12 +19,12 @@ The known values are the RSS data points and the corresponding receiver x and y 
 
 For the two locations we know, our model predicts these locations:
 
-8c:85:90:16:0a:a4  = (1.748, 2.914) Error =  0.591
+8c:85:90:16:0a:a4  = (1.748, 2.914) Error =  0.591  
 ac:9e:17:7d:31:e8  = (x,y) Error =  6.373
 
 
 These are our predictions for the two unknown Mac Address locations:
 
-d8:c4:6a:50:e3:b1 = (1.990, 3.479)
+d8:c4:6a:50:e3:b1 = (1.990, 3.479) 
 f8:cf:c5:97:e0:9e = (1.862, 4.822)
 
