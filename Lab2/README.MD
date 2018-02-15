@@ -28,6 +28,6 @@ Error =  6.373
 
 These are our predictions for the two unknown Mac Address locations:
 
-d8:c4:6a:50:e3:b1 = (1.990, 3.479) 
+d8:c4:6a:50:e3:b1 = (1.990, 3.479)  
 f8:cf:c5:97:e0:9e = (1.862, 4.822)
 
