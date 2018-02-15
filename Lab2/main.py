@@ -9,7 +9,6 @@ import os
 macs = ["8c:85:90:16:0a:a4", "ac:9e:17:7d:31:e8", "d8:c4:6a:50:e3:b1", "f8:cf:c5:97:e0:9e"]
 # 8c:85:90:16:0a:a4 (location: x=6.8, y=6.8)
 # ac:9e:17:7d:31:e8 (location: x=-0.87, y=9.45)
-# P = C - glog(d)
 
 def get_macs(folder):
     logs = parseFolder(folder)
@@ -29,7 +28,7 @@ def get_macs_each(folder):
 def train_folder(folder):
     macs_data = get_macs_each(folder)
     for mac_name in macs:
-        print("#### " + mac_name)
+        print("#### MAC: " + mac_name)
         curr_resx = []
         curr_resy = []
         errorx = []
@@ -38,31 +37,29 @@ def train_folder(folder):
         for mac in macs_data:
             if mac.mac == mac_name:
                 try:
-                    res = (least_sq_known(tx_unknown, (mac.dic["xs"], mac.dic["ys"]), mac.dic["rsses"]))
+                    res = least_sq_known(tx_unknown, (mac.dic["xs"], mac.dic["ys"]), mac.dic["rsses"])
                     curr_resx.append(res[0])
                     curr_resy.append(res[1])
-                    print(res)
-                    # print((res[0]), (res[1]))
                     if mac.mac == "8c:85:90:16:0a:a4":
                         err = (get_distance(res[0], 6.8, res[1], 6.8))
                         errors.append(err)
-                        # print("error:\t" + str((res[0]-6.8, res[1]-6.8, err)))
                     elif mac.mac == "ac:9e:17:7d:31:e8":
                         err = (get_distance(res[0], -0.87, res[1], 9.45))
-                        # print("error:\t" + str((res[0]+0.87, res[1]-9.45, err)))
                         errors.append(err)
                 except:
-                    print("problem")
-                # print("# end")
+                    pass
+                    print("Error: couldn't get results")
         resx = np.average(sorted(curr_resx)[2:-2])
         resy = np.median(sorted(curr_resy)[2:-2])
-        print("\nRES:\t" + str((resx, resy)))
+        print("\nRESULTS:\t" + str((resx, resy)))
         if mac_name == "8c:85:90:16:0a:a4":
             err = (get_distance(resx, 6.8, resy, 6.8))
-            print("ERRS:\t" + str((np.average(errors), err)))
+            print("Error avg:\t" + str(np.average(errors)))
+            print("Rrror Real:\t" + str(err))
         elif mac_name == "ac:9e:17:7d:31:e8":
             err = (get_distance(resx, -0.87, resy, 9.45))
-            print("ERRS:\t" + str((np.average(errors), err)))
+            print("Avg error:\t" + str(np.average(errors)))
+            print("Real error:\t" + str(err))
         print("------------------------------------------------------ END\n")
     return
 
@@ -111,5 +108,4 @@ def res_unknown(folder):
 
 if __name__ == '__main__':
     folder = "./data"
-    # res_for_ab(folder)
     train_folder(folder)
