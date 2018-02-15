@@ -8,7 +8,7 @@ First, we parsed the data and stored each data trace into a log class. Then, we 
 
 ## Algorithm
 
-We used the * *scipy curve_fit function* * which uses non-linear least squares to fit our function to the data we collected. The equation we use is:
+We used the *scipy curve_fit function*  which uses non-linear least squares to fit our function to the data we collected. The equation we use is:
 
 RSS = c - g * log(distance((rxx, txx),(rxy, txy))
 
