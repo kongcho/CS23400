@@ -10,7 +10,12 @@ First, we parsed the data and stored each data trace into a log class. Then, we 
 
 ## Algorithm
 
-We used 
+We used the scipy curve_fit function which uses non-linear least squares to fit our function to the data we collected. The equation we use is:
+
+RSS = c - g * log(distance((rxx, txx),(rxy, txy))
+
+The known values are the RSS data points and the corresponding receiver x and y locations. We used these values to train our model to predict the unknown values: c, g, and the location of the transmitter.
+
 
 ## Results
 
