@@ -45,6 +45,12 @@ def get_abs_d_2d(times, xs, ys):
     print(diff_vs)
     return all_abs_ds
 
+def process_times(t0, times):
+    new_ts = []
+    for i in range(len(times)):
+        new_ts.append(times[i] - t0)
+    return new_ts
+
 def get_abs_d_1d(times, xs):
     min_i = 0
     length = len(times) - 1
@@ -52,6 +58,7 @@ def get_abs_d_1d(times, xs):
     some_abs_ds = []
     all_abs_ds = []
     diff_vs = []
+    last_d = 0
     v0 = abs(xs[1] - xs[0])/(times[1] - times[0])
     for i in range(length):
         d = abs(xs[i+1] - xs[i])
@@ -64,7 +71,7 @@ def get_abs_d_1d(times, xs):
             # print(vavg)
             # print(v)
             diff_vs.append((i, vavg))
-            some_abs_ds = [vavg * t for t in times[min_i:]]
+            some_abs_ds = [last_d + vavg * t for t in process_times(times[min_i], times[min_i:])]
             all_abs_ds += some_abs_ds
         elif (v0 - 0.005) <= v <= (v0 + 0.005):
             some_vs.append(v)
@@ -75,12 +82,13 @@ def get_abs_d_1d(times, xs):
             # print(vavg)
             # print(v)
             diff_vs.append((i, vavg))
-            some_abs_ds = [vavg * t for t in times[min_i:i]]
+            some_abs_ds = [last_d + vavg * t for t in process_times(times[min_i], times[min_i:i])]
             all_abs_ds += some_abs_ds
+            last_d = some_abs_ds[-1]
             v0 = v
             some_vs = [v0]
             min_i = i
-    print(diff_vs)
+    # print(diff_vs)
     return all_abs_ds
 
 def get_speed_2d(times, xs, ys):
@@ -106,17 +114,14 @@ class Mac:
         self.dic = {}
         xs = []
         ys = []
-        ds = []
         rsses = []
         for logg in logs:
-            for i in range(len(logg.log["mac"])):
+            for i in range(len(logg.xs)):
                 if mac == logg.log["mac"][i]:
                     rsses.append(int(logg.log["rss"][i]))
-                    ds.append(logg.ds[i])
                     xs.append(logg.xs[i])
                     ys.append(logg.ys[i])
         self.mac = mac
-        self.dic["ds"] = np.asarray(ds)
         self.dic["xs"] = np.asarray(xs)
         self.dic["ys"] = np.asarray(ys)
         self.dic["rsses"] = np.asarray(rsses)
@@ -165,27 +170,15 @@ class Log:
                 m.append(dictionary[ylabel])
             self.log[ylabel] = m
 
-        self.spd = get_speed_2d(self.log["times"], self.log["loc_x"], self.log["loc_y"])
         self.spdx = get_speed_1d(self.log["times"], self.log["loc_x"])
         self.spdy = get_speed_1d(self.log["times"], self.log["loc_y"])
         # self.spdx = abs(self.log["loc_x"][-1] - self.log["loc_x"][0])/abs(self.log["times"][-1] - self.log["times"][0])
         # self.spdy = abs(self.log["loc_y"][-1] - self.log["loc_y"][0])/abs(self.log["times"][-1] - self.log["times"][0])
-        self.ds = [self.spd * t for t in self.log["times"]]
         self.xs = [self.spdx * t for t in self.log["times"]]
         self.ys = [self.spdy * t for t in self.log["times"]]
-        # print(self.ds[0:10] + self.ds[-5:-1])
         # print(self.xs[0:15] + self.ds[-5:-1])
         # print(self.ys[0:10] + self.ds[-5:-1])
-        # self.ds = get_abs_d_2d(self.log["times"], self.log["loc_x"], self.log["loc_y"])
         # self.xs = get_abs_d_1d(self.log["times"], self.log["loc_x"])
         # self.ys = get_abs_d_1d(self.log["times"], self.log["loc_y"])
-        # print(self.ds[0:10] + self.ds[-5:-1])
         # print(self.xs[0:15] + self.ds[-5:-1])
         # print(self.ys[0:10] + self.ds[-5:-1])
-        # self.xs = [0.0 * t for t in self.log["times"][:3818]] + \
-        #           [0.275123503584 * t for t in self.log["times"][3818:11964]] + \
-        #           [0.508998360497 * t for t in self.log["times"][8624:]]
-        # print("### END")
-
-if __name__ == '__main__':
-    pass

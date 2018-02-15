@@ -37,25 +37,25 @@ def train_folder(folder):
         errors = []
         for mac in macs_data:
             if mac.mac == mac_name:
-                mac.showPlot()
                 try:
-                    res = (least_sq(tx_unknown, (mac.dic["xs"], mac.dic["ys"]), mac.dic["rsses"]))
+                    res = (least_sq_known(tx_unknown, (mac.dic["xs"], mac.dic["ys"]), mac.dic["rsses"]))
                     curr_resx.append(res[0])
                     curr_resy.append(res[1])
-                    print((res[0]), (res[1]))
+                    print(res)
+                    # print((res[0]), (res[1]))
                     if mac.mac == "8c:85:90:16:0a:a4":
                         err = (get_distance(res[0], 6.8, res[1], 6.8))
                         errors.append(err)
-                        print("error:\t" + str((res[0]-6.8, res[1]-6.8, err)))
+                        # print("error:\t" + str((res[0]-6.8, res[1]-6.8, err)))
                     elif mac.mac == "ac:9e:17:7d:31:e8":
                         err = (get_distance(res[0], -0.87, res[1], 9.45))
-                        print("error:\t" + str((res[0]+0.87, res[1]-9.45, err)))
+                        # print("error:\t" + str((res[0]+0.87, res[1]-9.45, err)))
                         errors.append(err)
                 except:
-                    print("error")
-                print("# end")
-        resx = np.average(curr_resx)
-        resy = np.average(curr_resy)
+                    print("problem")
+                # print("# end")
+        resx = np.average(sorted(curr_resx)[2:-2])
+        resy = np.median(sorted(curr_resy)[2:-2])
         print("\nRES:\t" + str((resx, resy)))
         if mac_name == "8c:85:90:16:0a:a4":
             err = (get_distance(resx, 6.8, resy, 6.8))
@@ -66,12 +66,6 @@ def train_folder(folder):
         print("------------------------------------------------------ END\n")
     return
 
-def tx_known((rxx, rxy, aorb), g, c):
-    if aorb == 0:
-        return c - g * np.log10(get_distance(rxx, 6.8, rxy, 6.8))
-    elif aorb == 1:
-        return c - g * np.log10(get_distance(rxx, -0.87, rxy, 9.45))
-
 def tx_a((rxx, rxy), g, c):
     return c - g * np.log10(get_distance(rxx, 6.8, rxy, 6.8))
 
@@ -81,8 +75,13 @@ def tx_b((rxx, rxy), g, c):
 def tx_unknown((rxx, rxy), txx, txy, g, c):
     return c - g * np.log10(get_distance(rxx, txx, rxy, txy))
 
+def least_sq_known(func, locs, rss):
+    bs = ((-5, -5, -10, -100), (15, 15, 150, 100))
+    popt, pcov = scipy.optimize.curve_fit(func, locs, rss, (3, 3, 10, -30), bounds=bs, method='trf')
+    return popt
+
 def least_sq(func, locs, rss):
-    popt, pcov = scipy.optimize.curve_fit(func, locs, rss, (5, 5, -50, 1), method='lm')
+    popt, pcov = scipy.optimize.curve_fit(func, locs, rss, method='lm')
     return popt
 
 def res_for_ab(folder):
@@ -111,4 +110,6 @@ def res_unknown(folder):
             res_b = least_sq(tx_b, (mac.dic["xs"], mac.dic["ys"]), mac.dic["rsses"])
 
 if __name__ == '__main__':
-    train_folder("./data")
+    folder = "./data"
+    # res_for_ab(folder)
+    train_folder(folder)
