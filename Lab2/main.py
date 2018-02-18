@@ -1,5 +1,13 @@
+<<<<<<< HEAD
+#!/usr/bin/env python
+
+from parse import parseFolder
+from log import Log
+from mac import Mac
+=======
 from parse import parseFolder, parseFile
 from log import Log, Mac, get_distance
+>>>>>>> a7f8f69d986a306e9a0aa821e71012107314a910
 import scipy.optimize
 import numpy as np
 
@@ -22,6 +30,20 @@ def get_macs(folder):
         data.append(Mac(mac, logs))
     return data
 
+<<<<<<< HEAD
+def linear_func(x, m, c):
+    return m*np.asarray(x) + c
+
+def least_sq(mac):
+    xs = mac.logxs
+    ys = mac.rsses
+    for i in range(1):
+        plt.scatter(xs, ys, c='r')
+    popt, pcov = scipy.optimize.curve_fit(linear_func, xs, ys)
+#    plt.plot(xs, ys, 'b-')q
+#    plt.plot(xs, linear_func(xs, popt[0].item(), popt[1].item()), 'r-')
+    plt.show()
+=======
 # This function separated the data for each trace
 def get_macs_each(folder):
     """
@@ -99,6 +121,7 @@ def tx_unknown((rxx, rxy), txx, txy, g, c):
 def least_sq_known(func, locs, rss):
     bs = ((-5, -5, -10, -100), (15, 15, 150, 100))
     popt, pcov = scipy.optimize.curve_fit(func, locs, rss, (3, 3, 30, -30), bounds=bs, method='trf')
+>>>>>>> a7f8f69d986a306e9a0aa821e71012107314a910
     return popt
 
 # Original model with no parameters

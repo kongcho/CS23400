@@ -4,6 +4,9 @@ import pprint
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+<<<<<<< HEAD
+from util import get_speed_1d, get_speed_2d
+=======
 
 def get_distance(x1, x0, y1, y0):
     """
@@ -123,6 +126,7 @@ class Mac:
             plt.yticks([])
         plt.tight_layout()
         plt.show()
+>>>>>>> a7f8f69d986a306e9a0aa821e71012107314a910
 
 class Log:
     """
