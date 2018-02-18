@@ -10,7 +10,7 @@ from peakutils.plot import plot as pplot
 from math import sqrt
 
 class GyroOrAccel(object):
-    measTypes = ["Gyroscope", "Accelerometer"]
+    measTypes = ["Gyroscope", "Accelerometer", "Acceleration"]
     measurements = ["xs", "ys", "zs", "mags"]
 
     def __init__(self, measType, rawdata, filename=None):
@@ -56,13 +56,13 @@ class GyroOrAccel(object):
             ys = savgol_filter(ys, 41, 12)
             indexes = peakutils.indexes(ys, thres=0.9)
             pplot(xs,ys,indexes)
-            plt.title("%s for %s" % (ylabel, self.filename))
+            plt.title("%s %s for %s" % (self.measType, ylabel, self.filename))
             i += 1
         plt.show()
 
 if __name__ == '__main__':
     folder = "data"
-    for file in os.listdir("data"):
+    for file in os.listdir("data"):     
         filepath = os.path.join(folder, file)
         print(file)
         with open(filepath) as f:

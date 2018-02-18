@@ -7,7 +7,7 @@ import regex as re
 class Log(object):
     mtypes = ["xAccls", "yAccls", "zAccls"]
     def __init__(self, rawdata):
-        regex = "(.+) D:.+(Gyroscope|Accelerometer) (.+)"
+        regex = "(\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+).*(Gyroscope|Acceleration|Accelerometer).*?([-\.\dE]+,[-\.\dE]+,[-\.\dE]+)"
         self.times = []
         self.seconds = []
         self.data = []
@@ -16,6 +16,8 @@ class Log(object):
         for line in rawdata:
             try:
                 m = re.match(regex, line)
+                if not m:
+                    print("no match found \n\t%s" % line)
                 date = m.group(1)
                 dt = datetime.strptime(date, "%m-%d %H:%M:%S.%f")
                 secs = datetime_to_float(dt)
@@ -31,13 +33,17 @@ class Log(object):
                 self.seconds.append(s)
                 self.times.append(dt)                
                 motionType = m.group(2)
+                if motionType == "Acceleration":
+                    motionType = "Accelerometer"
                 data = m.group(3)
                 measurements = list(map(lambda x: float(x), data.split(",")))
                 dataPoint = [motionType, s, measurements]
                 self.data.append(dataPoint)
-            except:
+            except Exception as e:
+                print(str(e))
                 self.numErrs += 1
                 pass
+        print(self.numErrs)
 
 def datetime_to_float(d):
     epoch = datetime.utcfromtimestamp(0)
