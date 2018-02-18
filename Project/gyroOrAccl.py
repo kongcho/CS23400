@@ -53,7 +53,7 @@ class GyroOrAccel(object):
         for ylabel in self.measurements:
             plt.subplot(len(self.measurements),1,i)
             ys = np.array(self.__dict__[ylabel])
-            ys = savgol_filter(ys, 41, 12)
+            # ys = savgol_filter(ys, 41, 12)
             indexes = peakutils.indexes(ys, thres=0.9)
             pplot(xs,ys,indexes)
             plt.title("%s for %s" % (ylabel, self.filename))
@@ -63,6 +63,8 @@ class GyroOrAccel(object):
 if __name__ == '__main__':
     folder = "data"
     for file in os.listdir("data"):
+        if file[0] != "_":
+            continue       
         filepath = os.path.join(folder, file)
         print(file)
         with open(filepath) as f:
