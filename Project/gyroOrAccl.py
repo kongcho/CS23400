@@ -56,15 +56,13 @@ class GyroOrAccel(object):
             ys = savgol_filter(ys, 41, 12)
             indexes = peakutils.indexes(ys, thres=0.9)
             pplot(xs,ys,indexes)
-            plt.title("%s for %s" % (ylabel, self.filename))
+            plt.title("%s %s for %s" % (self.measType, ylabel, self.filename))
             i += 1
         plt.show()
 
 if __name__ == '__main__':
     folder = "data"
-    for file in os.listdir("data"):
-        if file != "jumping2.txt":
-            continue       
+    for file in os.listdir("data"):     
         filepath = os.path.join(folder, file)
         print(file)
         with open(filepath) as f:
