@@ -110,6 +110,10 @@ class GyroOrAccel(object):
                 singularPeaks.append(idxs[i])
         return singularPeaks
 
+
+    def hasPeak(self):
+        return len(self.getSingularPeaks("mags",1.5,25)) > 0
+
     def plotSingluarPeaks(self, timeInterval, minPeakHeight):
         i=1
         plt.figure(1).set_size_inches(24,48)
@@ -125,13 +129,15 @@ class GyroOrAccel(object):
         plt.show()
 
 if __name__ == '__main__':
-    folder = "data"
+    folder = "olddata"
     for file in os.listdir(folder):     
+        print(file)
         filepath = os.path.join(folder, file)
         with open(filepath) as f:
             data = f.read().split("\n")
         accl = GyroOrAccel("Accelerometer", data, file)
         gyro = GyroOrAccel("Gyroscope", data, file)
-        accl.findImpulse()
-        accl.plotSingluarPeaks(1.5, 25)
-        
+        # accl.findImpulse()
+        # accl.plotSingluarPeaks(1.5, 25)
+        if accl.hasPeak():
+            print("\t%s" % "Peak found!")

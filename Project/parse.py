@@ -16,8 +16,8 @@ class Log(object):
         for line in rawdata:
             try:
                 m = re.match(regex, line)
-                if not m:
-                    print("no match found \n\t%s" % line)
+                # if not m:
+                #     print("no match found \n\t%s" % line)
                 date = m.group(1)
                 dt = datetime.strptime(date, "%m-%d %H:%M:%S.%f")
                 secs = datetime_to_float(dt)
