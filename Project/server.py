@@ -1,9 +1,27 @@
 from bluetooth import *
+from gyroOrAccl import GyroOrAccel
+import time
 
 uuid = "54c7001e-263c-4fb6-bfa7-2dfe5fba0f5b"
 
-def runServer():
-    server_sock=BluetoothSocket( RFCOMM )
+def flatten_list(arr):
+    full_str = ""
+    for string in arr:
+        full_str += string
+    return full_str
+
+def analyse_string(data):
+    accl = GyroOrAccel("Accelerometer", data)
+    accl.plotSingluarPeaks(1.5, 25)
+
+def run_server():
+    epoch = time.time()
+    curr_data = []
+    curr_str = ""
+
+    is_first = True
+
+    server_sock=BluetoothSocket(RFCOMM)
     server_sock.bind(("",PORT_ANY))
     server_sock.listen(1)
 
@@ -17,25 +35,44 @@ def runServer():
     )
 
     print("Waiting for connection on RFCOMM channel %d" % port)
+    if time.time() - epoch > 30:
+        return 0
 
     client_sock, client_info = server_sock.accept()
     print("Accepted connection from ", client_info)
 
     try:
+        start_time = time.time()
         while True:
             data = client_sock.recv(1024)
             if len(data) == 0: break
-            print(data)
+            data = data.decode("utf-8") + "\n"
+            if time.time() - start_time > 1:
+                if len(curr_data) < 5:
+                    curr_data.append(curr_str + data)
+                    start_time = time.time()
+                else:
+                    curr_data = curr_data[1:]
+                    curr_data.append(curr_str + data)
+                    print("[" + flatten_list(curr_data) + "]\n")
+                    analyse_string(flatten_list(curr_data))
+                    start_time = time.time()
+                curr_str = ""
+            else:
+                curr_str += data
     except IOError:
-        pass
+        return 1
 
     print("disconnected")
 
     client_sock.close()
     server_sock.close()
-    print("runServer done")
+    print("run_server done")
 
-def print_from_server(filename):
+    return 0
+
+
+def run_server_instance_to_file(filename):
     server_sock=BluetoothSocket( RFCOMM )
     server_sock.bind(("",PORT_ANY))
     server_sock.listen(1)
@@ -59,7 +96,7 @@ def print_from_server(filename):
             while True:
                 data = client_sock.recv(1024)
                 if len(data) == 0: break
-                f.write(data + "\n")
+                f.write(data.decode("utf-8") + "\n")
     except IOError:
         pass
 
@@ -67,9 +104,11 @@ def print_from_server(filename):
 
     client_sock.close()
     server_sock.close()
-    print("runServer done")
+    print("run_server_instance_to_file " + filename + " done")
 
 if __name__ == "__main__":
-    # while True:
-    #     runServer()
-    print_from_server("./data/long3.txt")
+    # run_server_instance_to_file("./data/real-fall.txt")
+    while True:
+        run_server()
+        raw_in = input("Press enter to continue or type exit: ")
+        if raw_in == "exit": break
