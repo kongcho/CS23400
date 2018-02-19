@@ -40,10 +40,8 @@ class Log(object):
                 dataPoint = [motionType, s, measurements]
                 self.data.append(dataPoint)
             except Exception as e:
-                print(str(e))
                 self.numErrs += 1
                 pass
-        print(self.numErrs)
 
 def datetime_to_float(d):
     epoch = datetime.utcfromtimestamp(0)
