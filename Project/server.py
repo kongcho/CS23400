@@ -1,23 +1,24 @@
 from bluetooth import *
 from gyroOrAccl import GyroOrAccel
 import time
+import datetime
 
 uuid = "54c7001e-263c-4fb6-bfa7-2dfe5fba0f5b"
 
-def flatten_list(arr):
-    full_str = ""
-    for string in arr:
-        full_str += string
-    return full_str
+def flatten_list(arrs):
+    full_list = []
+    for arr in arrs:
+        full_list += arr
+    return full_list
 
 def analyse_string(data):
     accl = GyroOrAccel("Accelerometer", data)
-    accl.plotSingluarPeaks(1.5, 25)
+    return accl.hasPeak()
 
-def run_server():
+def run_server(second=1):
     epoch = time.time()
     curr_data = []
-    curr_str = ""
+    curr_strs = []
 
     is_first = True
 
@@ -46,20 +47,27 @@ def run_server():
         while True:
             data = client_sock.recv(1024)
             if len(data) == 0: break
-            data = data.decode("utf-8") + "\n"
-            if time.time() - start_time > 1:
+            data = data.decode("utf-8")
+            if time.time() - start_time > second:
                 if len(curr_data) < 5:
-                    curr_data.append(curr_str + data)
+                    curr_strs.append(data)
+                    curr_data.append(curr_strs)
                     start_time = time.time()
                 else:
+                    curr_strs.append(data)
                     curr_data = curr_data[1:]
-                    curr_data.append(curr_str + data)
-                    print("[" + flatten_list(curr_data) + "]\n")
-                    analyse_string(flatten_list(curr_data))
+                    curr_data.append(curr_strs)
+                    send_data = flatten_list(curr_data)
+                    timestamp = time.time()
+                    value = datetime.datetime.fromtimestamp(timestamp)
+                    is_single_peak = analyse_string(send_data)
+                    print("%s\t%s\t%s" % (value.strftime('%Y-%m-%d %H:%M:%S.%f'), \
+                                          len(send_data), is_single_peak))
+                    client_sock.send(str(is_single_peak))
                     start_time = time.time()
-                curr_str = ""
+                curr_strs = []
             else:
-                curr_str += data
+                curr_strs.append(data)
     except IOError:
         return 1
 
