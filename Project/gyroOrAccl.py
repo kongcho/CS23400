@@ -10,7 +10,7 @@ from peakutils.plot import plot as pplot
 from math import sqrt
 
 class GyroOrAccel(object):
-    measTypes = ["Gyroscope", "Accelerometer", "Acceleration"]
+    measTypes = ["Gyroscope", "Accelerometer"]
     measurements = ["xs", "ys", "zs", "mags"]
 
     def __init__(self, measType, rawdata, filename=None):
@@ -53,16 +53,13 @@ class GyroOrAccel(object):
         return indexes        
 
     def findImpulse(self):
-        i=1
         plt.figure(1).set_size_inches(24,48)
         xs = np.array(self.times)
-        for ylabel in self.measurements:
-            plt.subplot(len(self.measurements),1,i)
-            ys = np.array(self.__dict__[ylabel])
-            indexes = self.getPeakIndexes(ylabel)
-            pplot(xs,ys,indexes)
-            plt.title("%s %s for %s" % (self.measType, ylabel, self.filename))
-            i += 1
+        ylabel = "mags"
+        ys = np.array(self.__dict__[ylabel])
+        indexes = self.getPeakIndexes(ylabel)
+        pplot(xs,ys,indexes)
+        plt.title("%s %s for %s" % (self.measType, ylabel, self.filename))
         plt.show()
 
     def removeClosePeaks(self, idxs, ylabel, minDipHeight):
@@ -111,21 +108,17 @@ class GyroOrAccel(object):
         return singularPeaks
 
     def plotSingluarPeaks(self, timeInterval, minPeakHeight):
-        i=1
         plt.figure(1).set_size_inches(24,48)
         xs = np.array(self.times)
-        for ylabel in self.measurements:
-            plt.subplot(len(self.measurements),1,i)
-            ys = np.array(self.__dict__[ylabel])
-            ys = savgol_filter(ys, 41, 12)
-            indexes = self.getSingularPeaks(ylabel, timeInterval, minPeakHeight)
-            pplot(xs,ys,indexes)
-            plt.title("%s %s for %s" % (self.measType, ylabel, self.filename))
-            i += 1
+        ys = np.array(self.mags)
+        ys = savgol_filter(ys, 41, 12)
+        indexes = self.getSingularPeaks("mags", timeInterval, minPeakHeight)
+        pplot(xs,ys,indexes)
+        plt.title("%s %s for %s" % (self.measType, "mags", self.filename))
         plt.show()
 
 if __name__ == '__main__':
-    folder = "data"
+    folder = "olddata"
     for file in os.listdir(folder):     
         filepath = os.path.join(folder, file)
         with open(filepath) as f:
