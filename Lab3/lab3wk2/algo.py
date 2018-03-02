@@ -118,28 +118,38 @@ def log_vals(filename):
                 success, ret = detector.detect()
                 if success:
                     frame, mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx = ret
-                    curr_arr = [time.time(), mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx]
+                    curve_left = get_curvature(left_fit, left_fitx[-1])
+                    curve_right = get_curvature(right_fit, right_fit[-1])
+                    curr_arr = [time.time(), mid_x, left_fit, right_fit, curve_left, curve_right, ploty, left_fitx, right_fitx]
                     all_arrs.append(curr_arr)
-                    print(curr_arr[:4])
+                    print(curr_arr[:6])
 
+                    # midpoint based on initial mid-point
                     if is_first:
                         midpoint = mid_x
                         is_first = False
                         continue
-                    # CHANGE BASED ON MIDDLE
 
-                    # turn left
-                    # if mid_x < midpoint:
-                    #     for i in range(70, 80, 1):
-                    #         back_wheels.speed = (90 - i) * 4
-                    #         front_wheels.turn(-i)
-                    #         time.sleep(0.01)
-                    # turn right
-                    # else:
-                    #     for i in range(70, 80, 1):
-                    #         back_wheels.speed = (90 - i) * 4
-                    #         front_wheels.turn(i)
-                    #         time.sleep(0.01)
+#                    # CHANGE BASED ON MIDDLE
+
+#                    # turn left
+#                    if mid_x < midpoint:
+#                        for i in range(70, 80, 1):
+#                            back_wheels.speed = (90 - i) * 4
+#                            front_wheels.turn(-i)
+#                            time.sleep(0.01)
+#                    # turn right
+#                    else:
+#                        for i in range(70, 80, 1):
+#                            back_wheels.speed = (90 - i) * 4
+#                            front_wheels.turn(i)
+#                            time.sleep(0.01)
+
+#                    # CHANGE BASED ON AVERAGES
+#                    lefts = left_fitx[130:140]
+#                    rights = right_fitx[130:140]
+#                    avg = np.average(np.divide(np.subtract(lefts, rights), 2)) + np.average(lefts)
+
                 else:
                     print("FAILED SUCCESS")
             except Exception as e:
