@@ -54,7 +54,16 @@ LEFT = -1
 RIGHT = 1
 
 def nextDir(frame_midpoint, curr_ret):
-    pass
+    THRESHOLD = 0.2
+    frame, mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx = ret
+    # curve_left = get_curvature(left_fit, left_fitx[-1])
+    # curve_right = get_curvature(right_fit, right_fit[-1])
+    if mid_x < frame_midpoint * (1 - THRESHOLD):
+        return RIGHT
+    elif mid_x > frame_midpoint * (1 + THRESHOLD):
+        return LEFT
+    return STRAIGHT
+
 
 def steer(frame_midpoint, speed_0, scale, log=False, filename="out.txt"):
     init = time.time()
@@ -181,4 +190,4 @@ def log_vals(filename):
     return
 
 if __name__ == "__main__":
-    log_vals("out.txt")
+    steer(1.,1.,1.)
