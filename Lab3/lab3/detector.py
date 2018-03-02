@@ -11,15 +11,15 @@ from detector_wrapper import DetectorWrapper
 
 # set these values after testing?
 
-window_mid = 0      # midpoint of the window
+window_mid = 150      # midpoint of the window
 window_offset = 5   # level of sensitivity to midpoint of window
 time_offset = 1     # time offset for steering
-speed = 10          # speed level
+speed = 30          # baseline speed level
 
 
 def drive(ret):
 
-    mid_x = ret[0]  # midpoint of the lane at the bottom border of a frame
+    mid_x = ret[1]  # midpoint of the lane at the bottom border of a frame
 
     # if midpoint of lane is to the right of the frame
     if (mid_x > window_mid + window_offset):
@@ -48,13 +48,13 @@ def turn_dir(ret):
     # C gives us the position of the line based on how far away it is from the very left of the image
 
 
-    left_fit = ret[1] # parameters for left lane
+    left_fit = ret[2] # parameters for left lane
     left_a = left_fit[0]
     left_b = left_fit[1]
     left_c = left_fit[2]
 
 
-    right_ft = ret[2] # parameters for right lane
+    right_ft = ret[3] # parameters for right lane
     right_a = right_fit[0]
     right_b = right_fit[1]
     right_c = right_fit[2]
@@ -87,7 +87,7 @@ def detect():
             detector.plot(ret)
             print(ret[1])
 
-            # ret returns mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx 
+            # ret returns frame, mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx 
 
             # mid_x is the mid point of the lane at the bottom border of a frame
             # left_fit & right_fit are the fitted parameters for the parabola curve returned from numpy.polyfit
@@ -95,7 +95,6 @@ def detect():
 
             # turns front wheels left, right, or straight
             drive(ret)
-
 
             # other option: turn wheels using angle calculation from curvature of lane
 
