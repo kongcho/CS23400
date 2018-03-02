@@ -1,9 +1,0 @@
-{'straight': 97, 'right': 127, 'left': 67}
-DEBUG "front_wheels.py": Set debug off
-DEBUG "front_wheels.py": Set wheel debug off
-DEBUG "Servo.py": Set debug off
-DEBUG "back_wheels.py": Set debug off
-DEBUG "TB6612.py": Set debug off
-DEBUG "TB6612.py": Set debug off
-DEBUG "PCA9685.py": Set debug off
-START
