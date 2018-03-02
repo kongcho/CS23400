@@ -65,7 +65,7 @@ def nextDir(frame_midpoint, curr_ret):
     return STRAIGHT
 
 
-def steer(frame_midpoint, speed_0, scale):
+def steer(frame_midpoint, speed_0, scale, log=False):
     init = time.time()
     front_wheels.turn_straight()
     #TO CHANGE
@@ -79,7 +79,9 @@ def steer(frame_midpoint, speed_0, scale):
             break
         else:
             try:
-                move = nextDir(frame_midpoint)
+                success, ret = detector.detect()
+                if success:
+                    move = nextDir(frame_midpoint, ret)
                 if move == LEFT:
                     turn(front_wheels, scale, LEFT)
                 elif move == RIGHT:
