@@ -91,6 +91,8 @@ def steer(frame_midpoint, speed_0, scale, log=False, filename="out.txt"):
                     turn(front_wheels, scale, LEFT)
                 elif move == RIGHT:
                     turn(front_wheels, scale, RIGHT)
+                else:
+                    back_wheels.forward()
             except Exception as e:
                 back_wheels.stop()
                 print("ERROR")
