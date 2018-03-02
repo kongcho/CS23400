@@ -111,7 +111,7 @@ def log_vals(filename):
 #                    # CHANGE BASED ON AVERAGES
 #                    lefts = left_fitx[130:140]
 #                    rights = right_fitx[130:140]
-#                    avg = np.average(np.subtract(lefts, rights))
+#                    avg = np.average(np.divide(np.subtract(lefts, rights), 2)) + np.average(lefts)
 
                 else:
                     print("FAILED SUCCESS")
