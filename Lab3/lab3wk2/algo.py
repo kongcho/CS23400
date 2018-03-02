@@ -56,12 +56,17 @@ RIGHT = 1
 def nextDir(frame_midpoint, curr_ret):
     pass
 
-def steer(frame_midpoint, speed_0, scale, log=False):
+def steer(frame_midpoint, speed_0, scale, log=False, filename="out.txt"):
     init = time.time()
     front_wheels.turn_straight()
     #TO CHANGE
     back_wheels.speed = speed_0
     front_wheels.speed = speed_0
+
+    if log == True:
+        print("START")
+        all_arrs = []
+
     while True:
         # TO CHANGE MAX TIME
         if time.time() - init > 5:
@@ -81,6 +86,19 @@ def steer(frame_midpoint, speed_0, scale, log=False):
                 back_wheels.stop()
                 print("ERROR")
                 print(str(e))
+
+        if log == True:
+
+            frame, mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx = ret
+            curve_left = get_curvature(left_fit, left_fitx[-1])
+            curve_right = get_curvature(right_fit, right_fit[-1])
+            curr_arr = [time.time(), mid_x, left_fit, right_fit, curve_left, curve_right, ploty, left_fitx, right_fitx]
+            all_arrs.append(curr_arr)
+            print(curr_arr[:6])
+
+    if log == True:
+        all_arrs = np.array(all_arrs)
+        np.savetxt(filename, all_arrs, delimiter=',')
 
 
 def log_vals(filename):
