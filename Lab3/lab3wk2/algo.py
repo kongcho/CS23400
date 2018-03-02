@@ -44,6 +44,43 @@ def get_vals():
         print("END")
     return
 
+def turn(wheels, scale, direction):
+    wheels.turn_rel(scale * direction)
+    sleep(.01)
+    return
+
+STRAIGHT = 0
+LEFT = -1
+RIGHT = 1
+
+def nextDir(frame_midpoint, curr_ret):
+    pass
+
+def steer(frame_midpoint, speed_0, scale):
+    init = time.time()
+    front_wheels.turn_straight()
+    #TO CHANGE
+    back_wheels.speed = speed_0
+    front_wheels.speed = speed_0
+    while True:
+        # TO CHANGE MAX TIME
+        if time.time() - init > 5:
+            back_wheels.stop()
+            print("FINISH TIME")
+            break
+        else:
+            try:
+                move = nextDir(frame_midpoint)
+                if move == LEFT:
+                    turn(front_wheels, scale, LEFT)
+                elif move == RIGHT:
+                    turn(front_wheels, scale, RIGHT)
+            except Exception as e:
+                back_wheels.stop()
+                print("ERROR")
+                print(str(e))
+
+
 def log_vals(filename):
     print("START")
     init = time.time()
