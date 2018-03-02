@@ -11,7 +11,7 @@ from detector_wrapper import DetectorWrapper
 
 # set these values after testing?
 
-window_mid = 150      # midpoint of the window
+window_mid = 250    # midpoint of the window
 window_offset = 5   # level of sensitivity to midpoint of window
 time_offset = 1     # time offset for steering
 speed = 30          # baseline speed level
