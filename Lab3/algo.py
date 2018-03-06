@@ -201,15 +201,30 @@ LEFT = 1
 RIGHT = -1
 
 if __name__ == "__main__":
-    # scales is the turning angle, which is different based on how far the midpoint is from the frame midpoint, and different between left and right turn
-    # scales = (left turn soft angle, left hard angle, left diff threshold, right turn soft angle, right hard angle, right diff threshold)
+    # scales is the turning angle calculated based on how far the lane midpoint is from the frame midpoint 
+    # we incorportae different threshholds between left and right turn
+    
+    # scales parameters:
+    #     left turn soft angle
+    #     left hard angle
+    #     left diff threshold
+    #     right turn soft angle
+    #     right turn hard angle
+    #     right turn diff threshold
     scales = (4.7, 11.61, 90, 4.7, 8.93, 90)
-    # thresholds to detect as turning left after being a certain amount from frame center
-    # thresholds = (left side threshold, right side threshold)
+
+    # thresholds parameters:
+    #     left side threshhold
+    #     right side threshold
     thresholds = (0.17, 0.17)
-    # steer(frame_midpoint, speed_0, scales, thresholds, log=False, filename="out.txt")
-    # frame_midpoint = 250 for right turn
-    steer(260, 30, scales, thresholds)
+
+    # steer parameters:
+    #     frame_midpoint
+    #     speed_0
+    #     scales
+    #     thresholds
+
+    steer(260, 30, scales, thresholds)      # frame_midpoint = 250 for right turn
     # steer_mid(260, 30, scales, thresholds)
     # steer_future(260, 30, scales, thresholds)
 
