@@ -103,6 +103,97 @@ def steer(frame_midpoint, speed_0, scales, thresholds, maxtime, sleep_time=0.005
     if log == True:
         all_arrs = np.array(all_arrs)
         np.savetxt(filename, all_arrs, delimiter=',')
+    return
+
+# steer based on changing midpoint from last time
+def steer_mid(frame_midpoint, speed_0, scales, thresholds, maxtime, sleep_time=0.005, log=False, filename="out.txt"):
+    init = time.time()
+    front_wheels.turn_straight()
+    back_wheels.speed = speed_0
+    midpoint = frame_midpoint
+
+    if log == True:
+        all_arrs = []
+
+    while True:
+        if time.time() - init > maxtime:
+            back_wheels.stop()
+            print("FINISH TIME")
+            break
+        else:
+            try:
+                success, ret = detector.detect()
+                detector.plot(ret)
+                if success:
+                    move, diff = nextDir(midpoint, ret, thresholds)
+                    print(move, diff)
+                    turn(front_wheels, scales, move, diff, sleep_time)
+                    midpoint = ret[1]
+                else:
+                    back_wheels.stop()
+                    print("CANT DETECT LANE")
+            except Exception as e:
+                back_wheels.stop()
+                print("TRY FAILED: " + str(e))
+
+        if log == True:
+            frame, mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx = ret
+            curve_left = get_curvature(left_fit, left_fitx[-1])
+            curve_right = get_curvature(right_fit, right_fit[-1])
+            curr_arr = [time.time(), mid_x, left_fit, right_fit, curve_left, curve_right, ploty, left_fitx, right_fitx]
+            all_arrs.append(curr_arr)
+
+    if log == True:
+        all_arrs = np.array(all_arrs)
+        np.savetxt(filename, all_arrs, delimiter=',')
+    return
+
+# steer based on future midpoint (average)
+def steer_future(frame_midpoint, speed_0, scales, thresholds, maxtime, sleep_time=0.005, log=False, filename="out.txt"):
+    init = time.time()
+    front_wheels.turn_straight()
+    back_wheels.speed = speed_0
+    midpoint = frame_midpoint
+
+    if log == True:
+        all_arrs = []
+
+    while True:
+        if time.time() - init > maxtime:
+            back_wheels.stop()
+            print("FINISH TIME")
+            break
+        else:
+            try:
+                success, ret = detector.detect()
+                detector.plot(ret)
+                if success:
+                    lefts = ret[5][130:140]
+                    rights = ret[6][130:140]
+                    avg = np.average(np.divide(np.subtract(lefts, rights), 2)) + np.average(lefts)
+                    ret[1] = avg
+                    move, diff = nextDir(midpoint, ret, thresholds)
+                    print(move, diff)
+                    turn(front_wheels, scales, move, diff, sleep_time)
+                    midpoint = ret[1]
+                else:
+                    back_wheels.stop()
+                    print("CANT DETECT LANE")
+            except Exception as e:
+                back_wheels.stop()
+                print("TRY FAILED: " + str(e))
+
+        if log == True:
+            frame, mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx = ret
+            curve_left = get_curvature(left_fit, left_fitx[-1])
+            curve_right = get_curvature(right_fit, right_fit[-1])
+            curr_arr = [time.time(), mid_x, left_fit, right_fit, curve_left, curve_right, ploty, left_fitx, right_fitx]
+            all_arrs.append(curr_arr)
+
+    if log == True:
+        all_arrs = np.array(all_arrs)
+        np.savetxt(filename, all_arrs, delimiter=',')
+    return
 
 
 STRAIGHT = 0
@@ -119,4 +210,6 @@ if __name__ == "__main__":
     # steer(frame_midpoint, speed_0, scales, thresholds, log=False, filename="out.txt")
     # frame_midpoint = 250 for right turn
     steer(260, 30, scales, thresholds)
+    # steer_mid(260, 30, scales, thresholds)
+    # steer_future(260, 30, scales, thresholds)
 
