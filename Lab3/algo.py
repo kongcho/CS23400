@@ -41,15 +41,20 @@ def turn(wheels, scales, direction, diff, sleep_time):
     left_soft, left_hard, left_threshold, right_soft, right_hard, right_threshold = scales
     if direction == RIGHT:
         if diff > right_threshold:
+            print("HARD RIGHT")
             scale = right_hard
         else:
             scale = right_soft
     elif direction == LEFT:
         if diff > left_threshold:
+            print("HARD LEFT") 
             scale = left_hard
         else:
             scale = right_hard
-    wheels.turn_rel(scale * direction)
+    
+    else:
+        scale = 1 
+    wheels.turn_rel(-1 * scale) #scale * direction)
     sleep(sleep_time)
     return
 
@@ -84,6 +89,7 @@ def steer(frame_midpoint, speed_0, scales, thresholds, maxtime, sleep_time=0.005
                 detector.plot(ret)
                 if success:
                     move, diff = nextDir(frame_midpoint, ret, thresholds)
+                    print("move, diff") 
                     print(move, diff)
                     turn(front_wheels, scales, move, diff, sleep_time)
                 else:
@@ -211,20 +217,20 @@ if __name__ == "__main__":
     #     right turn soft angle
     #     right turn hard angle
     #     right turn diff threshold
-    scales = (4.7, 11.61, 90, 4.7, 8.93, 90)
+    scales = (4.7, 11.61, 90, 2.7, 8.93, 90)
 
     # thresholds parameters:
     #     left side threshhold
     #     right side threshold
-    thresholds = (0.17, 0.17)
+    thresholds = (0.00, 0.15)
 
     # steer parameters:
     #     frame_midpoint
     #     speed_0
     #     scales
     #     thresholds
-
-    steer(260, 30, scales, thresholds)      # frame_midpoint = 250 for right turn
-    # steer_mid(260, 30, scales, thresholds)
+   # front_wheels.turn_rel(-30)
+    steer(330, 30, scales, thresholds, 360)      # frame_midpoint = 250 for right turn
+    # steer_mid(290, 30, scales, thresholds)
     # steer_future(260, 30, scales, thresholds)
 
