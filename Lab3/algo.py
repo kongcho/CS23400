@@ -9,9 +9,10 @@ detector = DetectorWrapper()
 front_wheels = Front_Wheels()
 back_wheels = Back_Wheels()
 
-# getting the frame sizes of the image from ret[0].shape
-
-# turns by different angles (soft/hard) based on whether the midpoint is far enough from frame midpoint
+# the angle of the turn is different for left and right turn,
+#   and also if the lane midpoint is very far from the fixed midpoint
+# if the lane midpoint is too far from the fixed midpoint, the car
+#   will turn at a bigger angle
 def turn(wheels, scales, direction, diff, sleep_time):
     right_soft, right_hard, right_threshold, left_soft, left_hard, left_threshold = scales
     if direction == RIGHT:
@@ -30,6 +31,10 @@ def turn(wheels, scales, direction, diff, sleep_time):
     sleep(sleep_time)
     return
 
+# determines next move of the car based on the lane midpoint and fixed frame midpoint.
+# The thresholds are different between left and right side.
+# The car turns left if the lane midpoint is left of the frame midpoint, and turns right if
+#   the midpoint is on the right of the frame midpoint
 def nextDir(frame_midpoint, curr_ret, thresholds):
     left_side_thres, right_side_thres = thresholds
     frame, mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx = curr_ret
@@ -39,6 +44,7 @@ def nextDir(frame_midpoint, curr_ret, thresholds):
         return RIGHT, mid_x - frame_midpoint * (1 + right_side_thres)
     return STRAIGHT, 0
 
+# runs nextDir and inputs the next direction into turn
 def steer(frame_midpoint, speed_0, scales, thresholds, max_time, sleep_time=0.005, log=False, filename="out.txt"):
     init = time.time()
     front_wheels.turn_straight()
@@ -82,7 +88,7 @@ LEFT = -1
 
 if __name__ == "__main__":
     # scales is the turning angle calculated based on how far the lane midpoint is from the frame midpoint 
-    # we incorportae different threshholds between left and right turn
+    # we incorporate different threshholds between left and right turn
 
     # scales parameters:
     #     right turn soft angle
@@ -96,7 +102,7 @@ if __name__ == "__main__":
     # thresholds parameters:
     #     left side threshhold
     #     right side threshold
-    thresholds = (0.00, 0.15)
+    thresholds = (0.10, 0.15)
 
     # steer parameters:
     #     frame_midpoint
