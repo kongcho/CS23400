@@ -42,7 +42,7 @@ class GyroOrAccel(object):
              plt.subplot(len(self.measurements),1,i)
              i += 1
              plt.plot(self.times,m,label=ylabel)
-             plt.title("magnitude for %s from %s" % (ylabel, file))
+             plt.title("%s magnitude for %s from %s" % (self.measType, ylabel, file))
              plt.grid(True)
          plt.show()
 
@@ -109,7 +109,7 @@ class GyroOrAccel(object):
     def hasPeak(self, timeInterval=1.5, minPeakHeight=25):
         return len(self.getSingularPeaks("mags",timeInterval,minPeakHeight)) > 0
 
-    def plotSingluarPeaks(self, timeInterval, minPeakHeight, window_length=41, polyorder=12):
+    def plotSingluarPeaksMag(self, timeInterval=1.5, minPeakHeight=25, window_length=41, polyorder=12):
         plt.figure(1).set_size_inches(24,48)
         xs = np.array(self.times)
         ys = np.array(self.mags)
@@ -117,6 +117,20 @@ class GyroOrAccel(object):
         indexes = self.getSingularPeaks("mags", timeInterval, minPeakHeight)
         pplot(xs,ys,indexes)
         plt.title("%s %s for %s" % (self.measType, "mags", self.filename))
+        plt.show()
+
+    def plotSingluarPeaks(self, timeInterval=1.5, minPeakHeight=25, window_length=41, polyorder=12):
+        i = 1
+        plt.figure(1).set_size_inches(24,48)
+        xs = np.array(self.times)
+        for ylabel in self.measurements:
+            plt.subplot(len(self.measurements),1,i)
+            ys = np.array(self.__dict__[ylabel])
+            ys = savgol_filter(ys, window_length, polyorder)
+            indexes = self.getSingularPeaks(ylabel, timeInterval, minPeakHeight)
+            pplot(xs, ys, indexes)
+            plt.title("%s magnitude for %s from %s" % (self.measType, ylabel, self.filename))
+            i += 1
         plt.show()
 
 if __name__ == '__main__':
@@ -128,7 +142,7 @@ if __name__ == '__main__':
             data = f.read().split("\n")
         accl = GyroOrAccel("Linear", data, file)
         abso = GyroOrAccel("Absolute", data, file)
-        accl.plot()
-        abso.plot()
+        accl.plotSingluarPeaks()
+        abso.plotSingluarPeaks()
         if accl.hasPeak():
             print("\t%s" % "Peak found!")
