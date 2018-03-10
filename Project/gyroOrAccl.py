@@ -46,18 +46,18 @@ class GyroOrAccel(object):
              plt.grid(True)
          plt.show()
 
-    def getPeakIndexes(self, ylabel):
+    def getPeakIndexes(self, ylabel, window_length, polyorder):
         ys = np.array(self.__dict__[ylabel])
-        ys = savgol_filter(ys, 41, 12)
+        ys = savgol_filter(ys, window_length, polyorder)
         indexes = peakutils.indexes(ys, thres=0.8)
-        return indexes        
+        return indexes
 
-    def findImpulse(self):
+    def findImpulse(self, window_length=41, polyorder=12):
         plt.figure(1).set_size_inches(24,48)
         xs = np.array(self.times)
         ylabel = "mags"
         ys = np.array(self.__dict__[ylabel])
-        indexes = self.getPeakIndexes(ylabel)
+        indexes = self.getPeakIndexes(ylabel, window_length, polyorder)
         pplot(xs,ys,indexes)
         plt.title("%s %s for %s" % (self.measType, ylabel, self.filename))
         plt.show()
@@ -65,10 +65,8 @@ class GyroOrAccel(object):
     def removeClosePeaks(self, idxs, ylabel, minDipHeight):
         if len(idxs) in [0,1]:
             return idxs
-        
         ys = self.__dict__[ylabel]
         peaksWithDips = [idxs[0]]
-        
         for i in range(1, len(idxs)):
             for j in range(idxs[i-1], idxs[i]):
                 if ys[j] < minDipHeight:
@@ -76,10 +74,10 @@ class GyroOrAccel(object):
                     continue
         return peaksWithDips
 
-    def getSingularPeaks(self, ylabel, timeInterval, minPeakHeight):
-        idxs = self.getPeakIndexes(ylabel)
+    def getSingularPeaks(self, ylabel, timeInterval, minPeakHeight, window_length=41, polyorder=12):
+        idxs = self.getPeakIndexes(ylabel, window_length, polyorder)
         ys = self.__dict__[ylabel]
-        
+
         ## only take the peaks above a certain height
         idxs = list(filter(lambda x: ys[x] > minPeakHeight, idxs))
 
@@ -108,21 +106,21 @@ class GyroOrAccel(object):
         return singularPeaks
 
 
-    def hasPeak(self):
-        return len(self.getSingularPeaks("mags",1.5,25)) > 0
+    def hasPeak(self, timeInterval=1.5, minPeakHeight=25):
+        return len(self.getSingularPeaks("mags",timeInterval,minPeakHeight)) > 0
 
-    def plotSingluarPeaks(self, timeInterval, minPeakHeight):
+    def plotSingluarPeaks(self, timeInterval, minPeakHeight, window_length=41, polyorder=12):
         plt.figure(1).set_size_inches(24,48)
         xs = np.array(self.times)
         ys = np.array(self.mags)
-        ys = savgol_filter(ys, 41, 12)
+        ys = savgol_filter(ys, window_length, polyorder)
         indexes = self.getSingularPeaks("mags", timeInterval, minPeakHeight)
         pplot(xs,ys,indexes)
         plt.title("%s %s for %s" % (self.measType, "mags", self.filename))
         plt.show()
 
 if __name__ == '__main__':
-    folder = "longtraces"
+    folder = "finaldata"
     for file in os.listdir(folder):
         print(file)
         filepath = os.path.join(folder, file)
@@ -130,11 +128,7 @@ if __name__ == '__main__':
             data = f.read().split("\n")
         accl = GyroOrAccel("Linear", data, file)
         abso = GyroOrAccel("Absolute", data, file)
-        # gyro = GyroOrAccel("Gyroscope", data, file)
-        # accl.findImpulse()
         accl.plot()
-        accl.plotSingluarPeaks(1.5, 25)
         abso.plot()
-        abso.plotSingluarPeaks(1.5, 25)
         if accl.hasPeak():
             print("\t%s" % "Peak found!")

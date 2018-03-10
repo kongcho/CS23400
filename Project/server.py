@@ -63,7 +63,8 @@ def run_server(second=1):
                     is_single_peak = analyse_string(send_data)
                     print("%s\t%s\t%s" % (value.strftime('%Y-%m-%d %H:%M:%S.%f'), \
                                           len(send_data), is_single_peak))
-                    client_sock.send(str(is_single_peak))
+                    client_sock.send("EH")
+                    # client_sock.send(str(is_single_peak))
                     start_time = time.time()
                 curr_strs = []
             else:
