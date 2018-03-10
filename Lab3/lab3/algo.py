@@ -3,77 +3,113 @@ from mypicar.back_wheels import Back_Wheels
 from detector_wrapper import DetectorWrapper
 import time
 import numpy as np
+from time import sleep
 
 detector = DetectorWrapper()
-
 front_wheels = Front_Wheels()
 back_wheels = Back_Wheels()
 
-# frame, mid_x , left_fit , right_fit , ploty , left_fitx , right_fitx
-
-def get_curvature(fit, y_eval):
-    a, b, c = fit
-    curve_rad = ((1 + (2*a*y_eval + b)**2)**1.5) / np.absolute(2*a)
-    return curve_rad
-
-# turn left if detected lane center < middle etc
-def middle_lane():
-    print("START")
-    init = time.time()
-    drive = True
-    front_wheels.turn_straight()
-    back_wheels.speed = 50
-    front_wheels.speed = 50
-    while drive:
-        success, ret = detector.detect()
-        if time.time() - init > 5:
-            back_wheels.stop()
-            drive = False
-        elif success == 0:
-            back_wheels.stop()
-            print("ERROR")
-        elif:
-            lane_center = (ret[6] - ret[5]) / 2 + ret[5]
-            dist_to_center = lane_center - mid_x
-            print(dist_to_center)
-            if dist_to_center < 0:
-                # turn left
-                back_wheels.speed = dist_to_center
-                front_wheels.turn_rel(dist_to_center)
-            else:
-                # turn right
-                back_wheels.speed = dist_to_center
-                front_wheels.turn_rel(dist_to_center)
-        print("END")
+# the angle of the turn is different for left and right turn,
+#   and also if the lane midpoint is very far from the fixed midpoint
+# if the lane midpoint is too far from the fixed midpoint, the car
+#   will turn at a bigger angle
+def turn(wheels, scales, direction, diff, sleep_time):
+    right_soft, right_hard, right_threshold, left_soft, left_hard, left_threshold = scales
+    if direction == RIGHT:
+        if diff > right_threshold:
+            scale = right_hard
+        else:
+            scale = right_soft
+    elif direction == LEFT:
+        if diff > left_threshold:
+            scale = left_hard
+        else:
+            scale = right_hard
+    else:
+        scale = 0
+    wheels.turn_rel(scale * direction)
+    sleep(sleep_time)
     return
 
-# trying to see what kind of values u get
-def get_vals():
-    print("START")
+# determines next move of the car based on the lane midpoint and fixed frame midpoint.
+# The thresholds are different between left and right side.
+# The car turns left if the lane midpoint is left of the frame midpoint, and turns right if
+#   the midpoint is on the right of the frame midpoint
+def nextDir(frame_midpoint, curr_ret, thresholds):
+    left_side_thres, right_side_thres = thresholds
+    frame, mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx = curr_ret
+    if mid_x < frame_midpoint * (1 - left_side_thres):
+        return LEFT, frame_midpoint * (1 - left_side_thres) - mid_x
+    elif mid_x > frame_midpoint * (1 + right_side_thres):
+        return RIGHT, mid_x - frame_midpoint * (1 + right_side_thres)
+    return STRAIGHT, 0
+
+# runs nextDir and inputs the next direction into turn
+def steer(frame_midpoint, speed_0, scales, thresholds, max_time, sleep_time=0.005, log=False, filename="out.txt"):
     init = time.time()
-    drive = True
     front_wheels.turn_straight()
-    back_wheels.speed = 50
-    front_wheels.speed = 50
-    while drive:
-        if time.time() - init > 5:
+    back_wheels.speed = speed_0
+
+    if log == True:
+        all_arrs = []
+
+    while True:
+        if time.time() - init > max_time:
             back_wheels.stop()
-            drive = False
+            print("Error: time is finished")
+            break
         else:
             try:
-                back_wheels.forward()
                 success, ret = detector.detect()
-                print(time.time())
-                print("success " + success)
-                print("ret " + ret)
-                print("left " + str(get_curvature(ret[2], ret[4])))
-                print("right " + str(get_curvature(ret[3], ret[4])))
-                # detector.plot(ret[0])
-            except:
+                detector.plot(ret)
+                if success:
+                    move, diff = nextDir(frame_midpoint, ret, thresholds)
+                    turn(front_wheels, scales, move, diff, sleep_time)
+                else:
+                    back_wheels.stop()
+                    print("Stopped detecting lane")
+            except Exception as e:
                 back_wheels.stop()
-                print("ERROR")
-        print("END")
+                print("Can't detect: " + str(e))
+
+        if log == True:
+            frame, mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx = ret
+            curr_arr = [time.time(), mid_x, left_fit, right_fit, ploty, left_fitx, right_fitx]
+            all_arrs.append(curr_arr)
+
+    if log == True:
+        all_arrs = np.array(all_arrs)
+        np.savetxt(filename, all_arrs, delimiter=',')
     return
 
+STRAIGHT = 0
+RIGHT = 1
+LEFT = -1
+
 if __name__ == "__main__":
-    get_vals()
+    # scales is the turning angle calculated based on how far the lane midpoint is from the frame midpoint 
+    # we incorporate different threshholds between left and right turn
+
+    # scales parameters:
+    #     right turn soft angle
+    #     right hard angle
+    #     right diff threshold
+    #     left turn soft angle
+    #     left turn hard angle
+    #     left turn diff threshold
+    scales = (4.7, 11.61, 90, 2.7, 8.93, 90)
+
+    # thresholds parameters:
+    #     left side threshhold
+    #     right side threshold
+    thresholds = (0.10, 0.15)
+
+    # steer parameters:
+    #     frame_midpoint
+    #     speed_0
+    #     scales
+    #     thresholds
+    #     max_time
+    #     sleep_time
+    steer(330, 30, scales, thresholds, 360, 0.005)
+

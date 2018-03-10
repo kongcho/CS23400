@@ -7,7 +7,7 @@ import regex as re
 class Log(object):
     mtypes = ["xAccls", "yAccls", "zAccls"]
     def __init__(self, rawdata):
-        regex = "(\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+).*(Gyroscope|Acceleration|Accelerometer).*?([-\.\dE]+,[-\.\dE]+,[-\.\dE]+)"
+        regex = "(\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+).*(Linear|Absolute|Acceleration|Accelerometer).*?([-\.\dE]+,[-\.\dE]+,[-\.\dE]+)"
         self.times = []
         self.seconds = []
         self.data = []
@@ -31,10 +31,12 @@ class Log(object):
                     if gap > 1:
                         print("big time gap %f" % gap)
                 self.seconds.append(s)
-                self.times.append(dt)                
+                self.times.append(dt)
                 motionType = m.group(2)
                 if motionType == "Acceleration":
-                    motionType = "Accelerometer"
+                    motionType = "Linear"
+                elif motionType == "Accelerometer":
+                    motionType = "Absolute"
                 data = m.group(3)
                 measurements = list(map(lambda x: float(x), data.split(",")))
                 dataPoint = [motionType, s, measurements]
