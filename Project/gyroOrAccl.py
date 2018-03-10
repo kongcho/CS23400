@@ -122,15 +122,19 @@ class GyroOrAccel(object):
         plt.show()
 
 if __name__ == '__main__':
-    folder = "olddata"
-    for file in os.listdir(folder):     
+    folder = "data"
+    for file in os.listdir(folder):
         print(file)
         filepath = os.path.join(folder, file)
         with open(filepath) as f:
             data = f.read().split("\n")
-        accl = GyroOrAccel("Accelerometer", data, file)
-        gyro = GyroOrAccel("Gyroscope", data, file)
+        accl = GyroOrAccel("Linear", data, file)
+        abso = GyroOrAccel("Absolute", data, file)
+        # gyro = GyroOrAccel("Gyroscope", data, file)
         # accl.findImpulse()
-        # accl.plotSingluarPeaks(1.5, 25)
+        accl.plot()
+        accl.plotSingluarPeaks(1.5, 25)
+        abso.plot()
+        abso.plotSingluarPeaks(1.5, 25)
         if accl.hasPeak():
             print("\t%s" % "Peak found!")
