@@ -10,7 +10,7 @@ from peakutils.plot import plot as pplot
 from math import sqrt
 
 class GyroOrAccel(object):
-    measTypes = ["Gyroscope", "Accelerometer"]
+    measTypes = ["Linear", "Absolute"]
     measurements = ["xs", "ys", "zs", "mags"]
 
     def __init__(self, measType, rawdata, filename=None):
@@ -122,7 +122,7 @@ class GyroOrAccel(object):
         plt.show()
 
 if __name__ == '__main__':
-    folder = "data"
+    folder = "longtraces"
     for file in os.listdir(folder):
         print(file)
         filepath = os.path.join(folder, file)
