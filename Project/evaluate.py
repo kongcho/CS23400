@@ -210,4 +210,6 @@ if __name__ == '__main__':
     categorize_file(file_1)
     files = [file_1, file_2, file_3, file_4]
     # print(separate_files(files, group_by=[POSITIVE, SCENARIO]))
+    print_num_detected_each_cat("finaldata", group_by=[POSITIVE])
+    print("\n")
     print_num_detected_each_cat("finaldata", group_by=[POSITIVE, SCENARIO])
