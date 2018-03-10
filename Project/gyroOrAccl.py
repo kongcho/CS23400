@@ -8,6 +8,7 @@ import numpy as np
 import peakutils
 from peakutils.plot import plot as pplot
 from math import sqrt
+from evaluate import separate_files
 
 class GyroOrAccel(object):
     measTypes = ["Linear", "Absolute"]
@@ -134,14 +135,22 @@ class GyroOrAccel(object):
         plt.show()
 
 if __name__ == '__main__':
+    files = None
     folder = "finaldata"
-    for file in os.listdir(folder):
-        print(file)
-        filepath = os.path.join(folder, file)
+    all_files = sorted(os.listdir(folder))
+    categorised = separate_files(all_files, group_by=[2])
+    for dic in categorised:
+        if dic["label"] == "Sitting slow":
+            files = dic["files"]
+    if files == None:
+        print("no files picked up")
+    for filename in files:
+        print(filename)
+        filepath = os.path.join(folder, filename)
         with open(filepath) as f:
             data = f.read().split("\n")
-        accl = GyroOrAccel("Linear", data, file)
-        abso = GyroOrAccel("Absolute", data, file)
+        accl = GyroOrAccel("Linear", data, filename)
+        abso = GyroOrAccel("Absolute", data, filename)
         accl.plotSingluarPeaks()
         abso.plotSingluarPeaks()
         if accl.hasPeak():
