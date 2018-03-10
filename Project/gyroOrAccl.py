@@ -110,6 +110,10 @@ class GyroOrAccel(object):
     def hasPeak(self, timeInterval=1.5, minPeakHeight=25):
         return len(self.getSingularPeaks("mags",timeInterval,minPeakHeight)) > 0
 
+    def hasMultiplePeaks(self, timeInterval=1.5, minPeakHeight=25):
+        return len(self.getSingularPeaks("mags",timeInterval,minPeakHeight)) > 1
+
+
     def plotSingluarPeaksMag(self, timeInterval=1.5, minPeakHeight=25, window_length=41, polyorder=12):
         plt.figure(1).set_size_inches(24,48)
         xs = np.array(self.times)
