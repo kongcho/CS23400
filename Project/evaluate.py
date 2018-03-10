@@ -20,7 +20,7 @@ def positive_to_string(pos):
 	elif pos == 0:
 		return "Not fall"
 	else:
-		raise ValueError
+		raise ValueError("Positive value must be 0 or 1")
 
 def scenario_to_string(scenario):
 	if scenario == 0:
@@ -68,7 +68,7 @@ def scenario_to_string(scenario):
 	elif scenario == 21:
 		return "Uncategorized fall"
 	else:
-		raise ValueError 
+		raise ValueError("Invalid scenario value")
 
 def device_to_string(device):
 	if device == 0:
@@ -76,7 +76,7 @@ def device_to_string(device):
 	elif device == 1:
 		return "Cho Yin's phone"
 	else:
-		raise ValueError
+		raise ValueError("Invalid device value")
 
 def person_to_string(person):
 	if person == 0:
@@ -111,6 +111,8 @@ def person_to_string(person):
 		return "Gaibo"
 	elif person == 15:
 		return "Aaron"
+	else:
+		raise ValueError("Invalid person value")
 
 
 def cat_dict_to_string_dict(cat_dict):
