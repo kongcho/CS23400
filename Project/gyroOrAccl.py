@@ -198,4 +198,14 @@ class GyroOrAccel(object):
 
 
 if __name__ == '__main__':
-    pass
+    folder = "./FallChoLucy/"
+    files = sorted(os.listdir(folder))
+    for filename in files:
+        print(filename)
+        filepath = os.path.join(folder, filename)
+        with open(filepath) as f:
+            data = f.read().split("\n")
+        accl = GyroOrAccel("Linear", data, filename)
+        abso = GyroOrAccel("Absolute", data, filename)
+        accl.plotSingluarPeaks()
+        abso.plotSingluarPeaks()
