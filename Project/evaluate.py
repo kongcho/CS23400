@@ -149,9 +149,9 @@ def sep_files_by_fall(folder, extra=[True, True], timeInterval=1.5, minPeakHeigh
             one_fall.append(file)
         else:
             mult_falls.append(file)
-    return {"one fall": one_fall,
-            "multiple falls": mult_falls,
-            "no falls": no_falls}
+    return {"one detected": one_fall,
+            "multiple detected": mult_falls,
+            "none detected": no_falls}
 
 def sep_files_by_type_and_peak_fall(folder, group_by=[POSITIVE], extra=[True, True], timeInterval=1.5, minPeakHeight=25, window_length=41, polyorder=12):
     num_peaks_dict = sep_files_by_fall(folder, extra=extra, timeInterval=timeInterval, minPeakHeight=minPeakHeight, window_length=window_length, polyorder=polyorder)
@@ -163,7 +163,7 @@ def sep_files_by_type_and_peak_fall(folder, group_by=[POSITIVE], extra=[True, Tr
     return ret_dict
 
 def get_num_detected_each_cat(folder, timeInterval=1.5, minPeakHeight=25, group_by=[POSITIVE]):
-    separated = sep_files_by_type_and_peak(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=group_by)
+    separated = sep_files_by_type_and_peak_fall(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=group_by)
     ret_dict = {}
     for num_key in separated:
         ret_dict[num_key] = []
@@ -175,7 +175,7 @@ def get_num_detected_each_cat(folder, timeInterval=1.5, minPeakHeight=25, group_
 def get_recall(folder, timeInterval=1.5, minPeakHeight=25):
     detection_dict = get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=[POSITIVE])
     total_falls = 0 
-    for item in detection_dict["one peak"]:
+    for item in detection_dict["one detected"]:
         if item["label"] == "Fall":
             true_positives = item["num"]
     for key in detection_dict:
@@ -186,18 +186,18 @@ def get_recall(folder, timeInterval=1.5, minPeakHeight=25):
 
 def get_precision(folder, timeInterval=1.5, minPeakHeight=25):
     detection_dict = get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=[POSITIVE])
-    total_trials = detection_dict["one peak"][0]["num"] + detection_dict["one peak"][1]["num"] \
-        + detection_dict["no peaks"][0]["num"] + detection_dict["no peaks"][1]["num"] \
-        + detection_dict["one peak"][0]["num"] + detection_dict["one peak"][1]["num"]
-    for item in detection_dict["one peak"]:
+    total_trials = detection_dict["one detected"][0]["num"] + detection_dict["one detected"][1]["num"] \
+        + detection_dict["none detected"][0]["num"] + detection_dict["none detected"][1]["num"] \
+        + detection_dict["one detected"][0]["num"] + detection_dict["one detected"][1]["num"]
+    for item in detection_dict["one detected"]:
         if item["label"] == "Fall":
             true_positives = item["num"]
     return float(true_positives)/total_detections
 
 def get_truths(folder, timeInterval=1.5, minPeakHeight=25):
     detection_dict = get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=[POSITIVE])
-    total_detections = detection_dict["one peak"][0]["num"] + detection_dict["one peak"][1]["num"]
-    for item in detection_dict["one peak"]:
+    total_detections = detection_dict["one detected"][0]["num"] + detection_dict["one detected"][1]["num"]
+    for item in detection_dict["one detected"]:
         if item["label"] == "Fall":
             true_positives = item["num"]
     return float(true_positives)/total_detections
@@ -228,6 +228,15 @@ def print_num_detected_each_cat(folder, group_by=[POSITIVE], timeInterval=1.5, m
     print("accuracy: %s, pres: %s, recall: %s" % (((truth_pos + truth_neg)/sum), (truth_pos/(truth_pos + false_pos)), (truth_pos/(truth_pos + false_neg))))
     return separated
 
+def get_num_detected_each_cat_fall(folder, group_by=[POSITIVE], extra=[True, True], timeInterval=1.5, minPeakHeight=25, window_length=41, polyorder=12):
+    separated = sep_files_by_type_and_peak_fall(folder, extra=extra, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=group_by)
+    ret_dict = {}
+    for num_key in separated:
+        ret_dict[num_key] = []
+        for item in separated[num_key]:
+            item_dict = {"label": item["label"], "num": len(item["files"])}
+            ret_dict[num_key].append(item_dict)
+    return ret_dict
 
 def print_num_detected_each_cat_fall(folder, group_by=[POSITIVE], extra=[True, True], timeInterval=1.5, minPeakHeight=25, window_length=41, polyorder=12):
     separated = sep_files_by_type_and_peak_fall(folder, group_by, extra, timeInterval, minPeakHeight, window_length, polyorder)
@@ -240,12 +249,12 @@ def print_num_detected_each_cat_fall(folder, group_by=[POSITIVE], extra=[True, T
         for item in separated[num_key]:
             label = item["label"]
             total = len(item["files"])
-            if num_key == "no falls":
+            if num_key == "none detected":
                 if label == "Not fall":
                     truth_neg += total
                 elif label == "Fall":
                     false_neg += total
-            elif num_key == "one fall" or num_key == "multiple falls":
+            elif num_key == "one detected" or num_key == "multiple detected":
                 if label == "Not fall":
                     false_pos += total
                 elif label == "Fall":
@@ -260,36 +269,36 @@ def get_recall_and_precision(folder, timeInterval=1.5, minPeakHeight=25, group_b
     detection_dict = get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=group_by)
     # print(json.dumps(detection_dict, indent=4))
     total_falls = 0 
-    true_positives = None
-    for item in detection_dict["one peak"]:
+    true_positives = 0
+    for item in detection_dict["one detected"]:
         if "Fall" in item["label"] and phrase in item["label"]:
             true_positives = item["num"]
-    if true_positives is None:
+    if true_positives == 0:
         return -1., -1.
     for key in detection_dict:
         for item in detection_dict[key]:
             if "Fall" in item["label"] and phrase in item["label"]:
                 total_falls += item["num"]
     recall = float(true_positives)/total_falls
-    total_detections = detection_dict["one peak"][0]["num"] + detection_dict["one peak"][1]["num"]
-    for item in detection_dict["one peak"]:
+    total_detections = detection_dict["one detected"][0]["num"] + detection_dict["one detected"][1]["num"]
+    for item in detection_dict["one detected"]:
         if "Fall" in item["label"] and phrase in item["label"]:
             true_positives = item["num"]
     precision = float(true_positives)/total_detections
     return recall, precision
 
-def get_truth_by_category(categories, first_fall_cat):
-    detection_dict = get_num_detected_each_cat(folder, timeInterval=1.5, minPeakHeight=minPeakHeight, group_by=[POSITIVE, SCENARIO])
+def get_truth_by_category(folder, categories, first_fall_cat, minPeakHeight=16, extra=[True, True]):
+    detection_dict = get_num_detected_each_cat_fall(folder, timeInterval=1.5, minPeakHeight=minPeakHeight, group_by=[POSITIVE, SCENARIO], extra=extra)
     pos_dict = {}
     neg_dict = {}
     for cat_idx in range(len(categories)):
         cat = categories[cat_idx]
         if cat_idx < first_fall_cat:
-            true_key = "no peaks"
-            false_key = "one peak"
+            true_key = "none detected"
+            false_key = "one detected"
         else:
-            true_key = "one peak"
-            false_key = "no peaks"
+            true_key = "one detected"
+            false_key = "none detected"
         true_list = detection_dict[true_key]
         false_list = detection_dict[false_key]
         correct_num = 0
@@ -341,18 +350,23 @@ def print_results(folder, timeInterval=1.5, minPeakHeight=25, group_by=[POSITIVE
     print(json.dumps(get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=group_by), indent=4))
 
 if __name__ == '__main__':
-    # folder = "finaldata"
-    # categorize_file(file_1)
-    # files = [file_1, file_2, file_3, file_4]
-    # # print(separate_files(files, group_by=[POSITIVE, SCENARIO]))
-    # minPeakHeight = 16
-    # neg_dict, pos_dict = get_truth_by_category(scenarios, 10)
-    # # print(json.dumps(D, indent=4))
+    folder = "finaldata"
+    categorize_file(file_1)
+    files = [file_1, file_2, file_3, file_4]
+    # print(separate_files(files, group_by=[POSITIVE, SCENARIO]))
+    minPeakHeight = 16
+    for extra in [[True,True], [True, False], [False, True], [False, False]]:
+        neg_dict, pos_dict = get_truth_by_category(folder, scenarios, 10, extra=extra)
+        # print(json.dumps(D, indent=4))
 
-    # for D in [neg_dict, pos_dict]:
-    #     plt.bar(range(len(D)), list(D.values()), align='center')
-    #     plt.xticks(range(len(D)), list(D.keys()))
-    #     plt.show()
+        for D in [neg_dict, pos_dict]:
+            plt.bar(range(len(D)), list(D.values()), align='center')
+            plt.xticks(range(len(D)), list(D.keys()))
+            plt.title(str(extra))
+            plt.show()
+
+    # res = get_truth_by_category(folder, scenarios, 10)
+    # print(res)
 
     # for scenario in scenarios:
     #     # print("minPeakHeight: %d" % minPeakHeight)
@@ -364,32 +378,32 @@ if __name__ == '__main__':
     # print(get_precision("finaldata"))
     # print(get_recall("finaldata"))
     # print(optimize_recall_and_precision(folder))
-    files = None
-    folder = "finaldata"
-    all_files = sorted(os.listdir(folder))
-    files = all_files
-    categorised = separate_files(all_files, group_by=[1])
-    for dic in categorised:
-        if dic["label"] == "Fall":
-            files = dic["files"]
-    if files == None:
-        print("no files picked up")
-    # for filename in files:
-    #     print(filename)
-    #     filepath = os.path.join(folder, filename)
-    #     with open(filepath) as f:
-    #         data = f.read().split("\n")
-    #     abso = GyroOrAccel("Absolute", data, filename)
-    #     abso.plotSingluarPeaks()
-    #     if accl.is_fall():
-    #         print("\t%s" % "is Fall!")
-    for i in range(30):
-        print("\tminPeakHeight: " + str(i))
-        print("\tTrue True")
-        print_num_detected_each_cat_fall(folder, [POSITIVE], [True, True], 1.5, i)
-        print("\tTrue False")
-        print_num_detected_each_cat_fall(folder, [POSITIVE], [True, False], 1.5, i)
-        print("\tFalse True")
-        print_num_detected_each_cat_fall(folder, [POSITIVE], [False, True], 1.5, i)
-        print("\tFalse False")
-        print_num_detected_each_cat_fall(folder, [POSITIVE], [False, False], 1.5, i)
+    # files = None
+    # folder = "finaldata"
+    # all_files = sorted(os.listdir(folder))
+    # files = all_files
+    # categorised = separate_files(all_files, group_by=[1])
+    # for dic in categorised:
+    #     if dic["label"] == "Fall":
+    #         files = dic["files"]
+    # if files == None:
+    #     print("no files picked up")
+    # # for filename in files:
+    # #     print(filename)
+    # #     filepath = os.path.join(folder, filename)
+    # #     with open(filepath) as f:
+    # #         data = f.read().split("\n")
+    # #     abso = GyroOrAccel("Absolute", data, filename)
+    # #     abso.plotSingluarPeaks()
+    # #     if accl.is_fall():
+    # #         print("\t%s" % "is Fall!")
+    # for i in range(30):
+    #     print("\tminPeakHeight: " + str(i))
+    #     print("\tTrue True")
+    #     print_num_detected_each_cat_fall(folder, [POSITIVE], [True, True], 1.5, i)
+    #     print("\tTrue False")
+    #     print_num_detected_each_cat_fall(folder, [POSITIVE], [True, False], 1.5, i)
+    #     print("\tFalse True")
+    #     print_num_detected_each_cat_fall(folder, [POSITIVE], [False, True], 1.5, i)
+    #     print("\tFalse False")
+    #     print_num_detected_each_cat_fall(folder, [POSITIVE], [False, False], 1.5, i)
