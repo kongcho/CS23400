@@ -142,7 +142,7 @@ def sep_files_by_fall(folder, extra=[True, True], timeInterval=1.5, minPeakHeigh
         with open(filepath) as f:
             data = f.read().split("\n")
         abso = GyroOrAccel("Absolute", data, file)
-        fall_res = abso.is_fall(extra, timeInterval, minPeakHeight, window_length=window_length, polyorder=polyorder)
+        fall_res = abso.is_fall(extra, timeInterval, 5, minPeakHeight, window_length=window_length, polyorder=polyorder)
         if len(fall_res) == 0:
             no_falls.append(file)
         elif len(fall_res) == 1:
@@ -364,25 +364,32 @@ if __name__ == '__main__':
     # print(get_precision("finaldata"))
     # print(get_recall("finaldata"))
     # print(optimize_recall_and_precision(folder))
+
+    # filename = "finaldata/log_1_16_0_1_2.txt"
+    # with open(filename) as f:
+    #     data = f.read().split("\n")
+    # abso = GyroOrAccel("Absolute", data, filename)
+    # abso.plotSingluarPeaksMag()
+
     files = None
     folder = "finaldata"
     all_files = sorted(os.listdir(folder))
     files = all_files
-    categorised = separate_files(all_files, group_by=[1])
-    for dic in categorised:
-        if dic["label"] == "Fall":
-            files = dic["files"]
-    if files == None:
-        print("no files picked up")
+    # categorised = separate_files(all_files, group_by=[1])
+    # for dic in categorised:
+    #     if dic["label"] == "Fall":
+    #         files = dic["files"]
+    # if files == None:
+    #     print("no files picked up")
     # for filename in files:
     #     print(filename)
     #     filepath = os.path.join(folder, filename)
-    #     with open(filepath) as f:
-    #         data = f.read().split("\n")
-    #     abso = GyroOrAccel("Absolute", data, filename)
-    #     abso.plotSingluarPeaks()
-    #     if accl.is_fall():
-    #         print("\t%s" % "is Fall!")
+        # with open(filepath) as f:
+        #     data = f.read().split("\n")
+        # abso = GyroOrAccel("Absolute", data, filename)
+        # abso.is_fall(extra=[False, True], negPeakHeight=5, thres=0.5)
+    #    if abso.is_fall():
+    #        print("\t%s" % "is Fall!")
     for i in range(30):
         print("\tminPeakHeight: " + str(i))
         print("\tTrue True")

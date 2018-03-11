@@ -49,9 +49,9 @@ class GyroOrAccel(object):
              plt.grid(True)
          plt.show()
 
-    def getPeakIndexes(self, ys, window_length, polyorder):
+    def getPeakIndexes(self, ys, window_length, polyorder, thres=0.8):
         ys = savgol_filter(ys, window_length, polyorder)
-        indexes = peakutils.indexes(ys, thres=0.8)
+        indexes = peakutils.indexes(ys, thres)
         return indexes
 
     def findImpulse(self, window_length=41, polyorder=12):
@@ -83,8 +83,8 @@ class GyroOrAccel(object):
         ys = self.__dict__["mags"]
         return len(self.getSingularPeaks(ys,timeInterval,minPeakHeight, window_length, polyorder)) > 1
 
-    def getSingularPeaks(self, ys, timeInterval=1.5, minPeakHeight=25, window_length=41, polyorder=12):
-        idxs = self.getPeakIndexes(ys, window_length=window_length, polyorder=polyorder)
+    def getSingularPeaks(self, ys, timeInterval=1.5, minPeakHeight=25, window_length=41, polyorder=12, thres=0.8):
+        idxs = self.getPeakIndexes(ys, window_length=window_length, polyorder=polyorder, thres=thres)
 
         ## only take the peaks above a certain height
         idxs = list(filter(lambda x: ys[x] > minPeakHeight, idxs))
@@ -113,21 +113,38 @@ class GyroOrAccel(object):
                 singularPeaks.append(idxs[i])
         return singularPeaks
 
-    def down_and_up(self, ylabel, peaks_pos, timeInterval=1.5, minNegPeakHeight=1, window_length=41, polyorder=12):
+    def down_and_up(self, ylabel, peaks_pos, timeInterval=1.5, minNegPeakHeight=1, window_length=41, polyorder=12, thres=0.5):
         final_indexes = []
         ys_neg = np.negative(np.array(self.__dict__[ylabel]))
-        peaks_neg = self.getSingularPeaks(ys_neg, timeInterval, minNegPeakHeight, window_length, polyorder)
+        # print(ys_neg)
+        # peaks_neg = self.getPeakIndexes(ys_neg, window_length, polyorder, thres)
+        peaks_neg = self.getSingularPeaks(ys_neg, 0.01, minNegPeakHeight, window_length, polyorder, thres)
+        # print(peaks_neg)
+        # print(peaks_pos)
         if len(peaks_neg) == 0:
             return []
         for peak_neg in peaks_neg:
             for peak_pos in peaks_pos:
-                if peak_neg < peak_pos:
+                if peak_neg <= peak_pos:
                     final_indexes.append(peak_pos)
+        # i = 1
+        # plt.figure(1).set_size_inches(24,48)
+        # xs = np.array(self.times)
+        # for ylabel in self.measurements:
+        #     plt.subplot(len(self.measurements),1,i)
+        #     ys = np.array(self.__dict__[ylabel])
+        #     ys = savgol_filter(ys, 41, 12)
+        #     indexes = peaks_neg + final_indexes
+        #     pplot(xs, ys, indexes)
+        #     plt.title("%s magnitude for %s from %s" % (self.measType, ylabel, self.filename))
+        #     i += 1
+        # plt.show()
+
         return final_indexes
 
-    def is_fall(self, extra=[True, True], timeInterval=1.5, negPeakHeight=1, minPeakHeight=25, window_length=41, polyorder=12):
+    def is_fall(self, extra=[True, True], timeInterval=1.5, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5):
         ys = self.__dict__["mags"]
-        indexes = self.getSingularPeaks(ys, timeInterval, minPeakHeight, window_length, polyorder)
+        indexes = self.getSingularPeaks(ys, timeInterval, minPeakHeight, window_length, polyorder, thres)
         if len(indexes) == 0:
             return indexes
         if extra[0]:
@@ -164,6 +181,21 @@ class GyroOrAccel(object):
             plt.title("%s magnitude for %s from %s" % (self.measType, ylabel, self.filename))
             i += 1
         plt.show()
+
+    def plotFinalAlgoPeaks(self, extra=[True, True]):
+        i = 1
+        plt.figure(1).set_size_inches(24,48)
+        xs = np.array(self.times)
+        for ylabel in self.measurements:
+            plt.subplot(len(self.measurements),1,i)
+            ys = np.array(self.__dict__[ylabel])
+            ys = savgol_filter(ys, 41, 12)
+            indexes = self.is_fall(extra=extra)
+            pplot(xs, ys, indexes)
+            plt.title("%s magnitude for %s from %s" % (self.measType, ylabel, self.filename))
+            i += 1
+        plt.show()
+
 
 if __name__ == '__main__':
     pass

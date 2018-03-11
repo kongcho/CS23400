@@ -1,0 +1,390 @@
+	minPeakHeight: 0
+	True True
+false_pos: 48, false neg: 62, true pos: 45, true neg: 198
+accuracy: 0.6883852691218131, pres: 0.4838709677419355, recall: 0.4205607476635514
+	True False
+false_pos: 88, false neg: 58, true pos: 49, true neg: 158
+accuracy: 0.5864022662889519, pres: 0.35766423357664234, recall: 0.45794392523364486
+	False True
+false_pos: 78, false neg: 14, true pos: 93, true neg: 168
+accuracy: 0.7393767705382436, pres: 0.543859649122807, recall: 0.8691588785046729
+	False False
+false_pos: 244, false neg: 0, true pos: 107, true neg: 2
+accuracy: 0.3087818696883853, pres: 0.30484330484330485, recall: 1.0
+	minPeakHeight: 1
+	True True
+false_pos: 50, false neg: 63, true pos: 44, true neg: 196
+accuracy: 0.6798866855524079, pres: 0.46808510638297873, recall: 0.411214953271028
+	True False
+false_pos: 84, false neg: 59, true pos: 48, true neg: 162
+accuracy: 0.5949008498583569, pres: 0.36363636363636365, recall: 0.4485981308411215
+	False True
+false_pos: 73, false neg: 19, true pos: 88, true neg: 173
+accuracy: 0.7393767705382436, pres: 0.546583850931677, recall: 0.822429906542056
+	False False
+false_pos: 172, false neg: 5, true pos: 102, true neg: 74
+accuracy: 0.4985835694050991, pres: 0.3722627737226277, recall: 0.9532710280373832
+	minPeakHeight: 2
+	True True
+false_pos: 47, false neg: 63, true pos: 44, true neg: 199
+accuracy: 0.6883852691218131, pres: 0.4835164835164835, recall: 0.411214953271028
+	True False
+false_pos: 80, false neg: 59, true pos: 48, true neg: 166
+accuracy: 0.6062322946175638, pres: 0.375, recall: 0.4485981308411215
+	False True
+false_pos: 70, false neg: 25, true pos: 82, true neg: 176
+accuracy: 0.7308781869688386, pres: 0.5394736842105263, recall: 0.7663551401869159
+	False False
+false_pos: 158, false neg: 11, true pos: 96, true neg: 88
+accuracy: 0.5212464589235127, pres: 0.3779527559055118, recall: 0.897196261682243
+	minPeakHeight: 3
+	True True
+false_pos: 45, false neg: 65, true pos: 42, true neg: 201
+accuracy: 0.6883852691218131, pres: 0.4827586206896552, recall: 0.3925233644859813
+	True False
+false_pos: 78, false neg: 61, true pos: 46, true neg: 168
+accuracy: 0.6062322946175638, pres: 0.3709677419354839, recall: 0.42990654205607476
+	False True
+false_pos: 65, false neg: 28, true pos: 79, true neg: 181
+accuracy: 0.7365439093484419, pres: 0.5486111111111112, recall: 0.7383177570093458
+	False False
+false_pos: 160, false neg: 15, true pos: 92, true neg: 86
+accuracy: 0.5042492917847026, pres: 0.36507936507936506, recall: 0.8598130841121495
+	minPeakHeight: 4
+	True True
+false_pos: 45, false neg: 67, true pos: 40, true neg: 201
+accuracy: 0.6827195467422096, pres: 0.47058823529411764, recall: 0.37383177570093457
+	True False
+false_pos: 76, false neg: 64, true pos: 43, true neg: 170
+accuracy: 0.603399433427762, pres: 0.36134453781512604, recall: 0.40186915887850466
+	False True
+false_pos: 65, false neg: 32, true pos: 75, true neg: 181
+accuracy: 0.7252124645892352, pres: 0.5357142857142857, recall: 0.7009345794392523
+	False False
+false_pos: 155, false neg: 21, true pos: 86, true neg: 91
+accuracy: 0.5014164305949008, pres: 0.35684647302904565, recall: 0.8037383177570093
+	minPeakHeight: 5
+	True True
+false_pos: 43, false neg: 69, true pos: 38, true neg: 203
+accuracy: 0.6827195467422096, pres: 0.4691358024691358, recall: 0.35514018691588783
+	True False
+false_pos: 74, false neg: 67, true pos: 40, true neg: 172
+accuracy: 0.6005665722379604, pres: 0.3508771929824561, recall: 0.37383177570093457
+	False True
+false_pos: 61, false neg: 36, true pos: 71, true neg: 185
+accuracy: 0.7252124645892352, pres: 0.5378787878787878, recall: 0.6635514018691588
+	False False
+false_pos: 144, false neg: 27, true pos: 80, true neg: 102
+accuracy: 0.5155807365439093, pres: 0.35714285714285715, recall: 0.7476635514018691
+	minPeakHeight: 6
+	True True
+false_pos: 42, false neg: 70, true pos: 37, true neg: 204
+accuracy: 0.6827195467422096, pres: 0.46835443037974683, recall: 0.34579439252336447
+	True False
+false_pos: 73, false neg: 68, true pos: 39, true neg: 173
+accuracy: 0.6005665722379604, pres: 0.3482142857142857, recall: 0.3644859813084112
+	False True
+false_pos: 64, false neg: 38, true pos: 69, true neg: 182
+accuracy: 0.7110481586402266, pres: 0.518796992481203, recall: 0.6448598130841121
+	False False
+false_pos: 138, false neg: 29, true pos: 78, true neg: 108
+accuracy: 0.5269121813031161, pres: 0.3611111111111111, recall: 0.7289719626168224
+	minPeakHeight: 7
+	True True
+false_pos: 42, false neg: 71, true pos: 36, true neg: 204
+accuracy: 0.6798866855524079, pres: 0.46153846153846156, recall: 0.3364485981308411
+	True False
+false_pos: 69, false neg: 69, true pos: 38, true neg: 177
+accuracy: 0.6090651558073654, pres: 0.35514018691588783, recall: 0.35514018691588783
+	False True
+false_pos: 65, false neg: 41, true pos: 66, true neg: 181
+accuracy: 0.6997167138810199, pres: 0.5038167938931297, recall: 0.616822429906542
+	False False
+false_pos: 128, false neg: 32, true pos: 75, true neg: 118
+accuracy: 0.546742209631728, pres: 0.3694581280788177, recall: 0.7009345794392523
+	minPeakHeight: 8
+	True True
+false_pos: 43, false neg: 72, true pos: 35, true neg: 203
+accuracy: 0.6742209631728046, pres: 0.44871794871794873, recall: 0.32710280373831774
+	True False
+false_pos: 67, false neg: 70, true pos: 37, true neg: 179
+accuracy: 0.6118980169971672, pres: 0.3557692307692308, recall: 0.34579439252336447
+	False True
+false_pos: 64, false neg: 43, true pos: 64, true neg: 182
+accuracy: 0.6968838526912181, pres: 0.5, recall: 0.5981308411214953
+	False False
+false_pos: 117, false neg: 36, true pos: 71, true neg: 129
+accuracy: 0.56657223796034, pres: 0.3776595744680851, recall: 0.6635514018691588
+	minPeakHeight: 9
+	True True
+false_pos: 41, false neg: 72, true pos: 35, true neg: 205
+accuracy: 0.6798866855524079, pres: 0.4605263157894737, recall: 0.32710280373831774
+	True False
+false_pos: 63, false neg: 70, true pos: 37, true neg: 183
+accuracy: 0.623229461756374, pres: 0.37, recall: 0.34579439252336447
+	False True
+false_pos: 61, false neg: 46, true pos: 61, true neg: 185
+accuracy: 0.6968838526912181, pres: 0.5, recall: 0.5700934579439252
+	False False
+false_pos: 108, false neg: 40, true pos: 67, true neg: 138
+accuracy: 0.5807365439093485, pres: 0.38285714285714284, recall: 0.6261682242990654
+	minPeakHeight: 10
+	True True
+false_pos: 42, false neg: 72, true pos: 35, true neg: 204
+accuracy: 0.6770538243626062, pres: 0.45454545454545453, recall: 0.32710280373831774
+	True False
+false_pos: 63, false neg: 71, true pos: 36, true neg: 183
+accuracy: 0.6203966005665722, pres: 0.36363636363636365, recall: 0.3364485981308411
+	False True
+false_pos: 63, false neg: 46, true pos: 61, true neg: 183
+accuracy: 0.6912181303116147, pres: 0.49193548387096775, recall: 0.5700934579439252
+	False False
+false_pos: 102, false neg: 41, true pos: 66, true neg: 144
+accuracy: 0.5949008498583569, pres: 0.39285714285714285, recall: 0.616822429906542
+	minPeakHeight: 11
+	True True
+false_pos: 41, false neg: 70, true pos: 37, true neg: 205
+accuracy: 0.6855524079320113, pres: 0.47435897435897434, recall: 0.34579439252336447
+	True False
+false_pos: 60, false neg: 68, true pos: 39, true neg: 186
+accuracy: 0.6373937677053825, pres: 0.3939393939393939, recall: 0.3644859813084112
+	False True
+false_pos: 60, false neg: 44, true pos: 63, true neg: 186
+accuracy: 0.7053824362606232, pres: 0.5121951219512195, recall: 0.5887850467289719
+	False False
+false_pos: 97, false neg: 38, true pos: 69, true neg: 149
+accuracy: 0.6175637393767706, pres: 0.41566265060240964, recall: 0.6448598130841121
+	minPeakHeight: 12
+	True True
+false_pos: 41, false neg: 69, true pos: 38, true neg: 205
+accuracy: 0.6883852691218131, pres: 0.4810126582278481, recall: 0.35514018691588783
+	True False
+false_pos: 60, false neg: 67, true pos: 40, true neg: 186
+accuracy: 0.6402266288951841, pres: 0.4, recall: 0.37383177570093457
+	False True
+false_pos: 61, false neg: 46, true pos: 61, true neg: 185
+accuracy: 0.6968838526912181, pres: 0.5, recall: 0.5700934579439252
+	False False
+false_pos: 92, false neg: 41, true pos: 66, true neg: 154
+accuracy: 0.623229461756374, pres: 0.4177215189873418, recall: 0.616822429906542
+	minPeakHeight: 13
+	True True
+false_pos: 40, false neg: 68, true pos: 39, true neg: 206
+accuracy: 0.6940509915014165, pres: 0.4936708860759494, recall: 0.3644859813084112
+	True False
+false_pos: 58, false neg: 66, true pos: 41, true neg: 188
+accuracy: 0.6487252124645893, pres: 0.41414141414141414, recall: 0.38317757009345793
+	False True
+false_pos: 58, false neg: 45, true pos: 62, true neg: 188
+accuracy: 0.7082152974504249, pres: 0.5166666666666667, recall: 0.5794392523364486
+	False False
+false_pos: 86, false neg: 41, true pos: 66, true neg: 160
+accuracy: 0.6402266288951841, pres: 0.4342105263157895, recall: 0.616822429906542
+	minPeakHeight: 14
+	True True
+false_pos: 39, false neg: 69, true pos: 38, true neg: 207
+accuracy: 0.6940509915014165, pres: 0.4935064935064935, recall: 0.35514018691588783
+	True False
+false_pos: 58, false neg: 67, true pos: 40, true neg: 188
+accuracy: 0.6458923512747875, pres: 0.40816326530612246, recall: 0.37383177570093457
+	False True
+false_pos: 56, false neg: 48, true pos: 59, true neg: 190
+accuracy: 0.7053824362606232, pres: 0.5130434782608696, recall: 0.5514018691588785
+	False False
+false_pos: 83, false neg: 44, true pos: 63, true neg: 163
+accuracy: 0.6402266288951841, pres: 0.4315068493150685, recall: 0.5887850467289719
+	minPeakHeight: 15
+	True True
+false_pos: 39, false neg: 66, true pos: 41, true neg: 207
+accuracy: 0.7025495750708215, pres: 0.5125, recall: 0.38317757009345793
+	True False
+false_pos: 57, false neg: 64, true pos: 43, true neg: 189
+accuracy: 0.6572237960339944, pres: 0.43, recall: 0.40186915887850466
+	False True
+false_pos: 57, false neg: 43, true pos: 64, true neg: 189
+accuracy: 0.71671388101983, pres: 0.5289256198347108, recall: 0.5981308411214953
+	False False
+false_pos: 81, false neg: 39, true pos: 68, true neg: 165
+accuracy: 0.660056657223796, pres: 0.4563758389261745, recall: 0.6355140186915887
+	minPeakHeight: 16
+	True True
+false_pos: 39, false neg: 65, true pos: 42, true neg: 207
+accuracy: 0.7053824362606232, pres: 0.5185185185185185, recall: 0.3925233644859813
+	True False
+false_pos: 57, false neg: 63, true pos: 44, true neg: 189
+accuracy: 0.660056657223796, pres: 0.43564356435643564, recall: 0.411214953271028
+	False True
+false_pos: 59, false neg: 41, true pos: 66, true neg: 187
+accuracy: 0.71671388101983, pres: 0.528, recall: 0.616822429906542
+	False False
+false_pos: 83, false neg: 36, true pos: 71, true neg: 163
+accuracy: 0.6628895184135978, pres: 0.461038961038961, recall: 0.6635514018691588
+	minPeakHeight: 17
+	True True
+false_pos: 40, false neg: 69, true pos: 38, true neg: 206
+accuracy: 0.6912181303116147, pres: 0.48717948717948717, recall: 0.35514018691588783
+	True False
+false_pos: 58, false neg: 67, true pos: 40, true neg: 188
+accuracy: 0.6458923512747875, pres: 0.40816326530612246, recall: 0.37383177570093457
+	False True
+false_pos: 61, false neg: 44, true pos: 63, true neg: 185
+accuracy: 0.7025495750708215, pres: 0.5080645161290323, recall: 0.5887850467289719
+	False False
+false_pos: 84, false neg: 39, true pos: 68, true neg: 162
+accuracy: 0.6515580736543909, pres: 0.4473684210526316, recall: 0.6355140186915887
+	minPeakHeight: 18
+	True True
+false_pos: 39, false neg: 69, true pos: 38, true neg: 207
+accuracy: 0.6940509915014165, pres: 0.4935064935064935, recall: 0.35514018691588783
+	True False
+false_pos: 57, false neg: 68, true pos: 39, true neg: 189
+accuracy: 0.6458923512747875, pres: 0.40625, recall: 0.3644859813084112
+	False True
+false_pos: 59, false neg: 45, true pos: 62, true neg: 187
+accuracy: 0.7053824362606232, pres: 0.512396694214876, recall: 0.5794392523364486
+	False False
+false_pos: 82, false neg: 41, true pos: 66, true neg: 164
+accuracy: 0.6515580736543909, pres: 0.44594594594594594, recall: 0.616822429906542
+	minPeakHeight: 19
+	True True
+false_pos: 40, false neg: 65, true pos: 42, true neg: 206
+accuracy: 0.7025495750708215, pres: 0.5121951219512195, recall: 0.3925233644859813
+	True False
+false_pos: 56, false neg: 64, true pos: 43, true neg: 190
+accuracy: 0.660056657223796, pres: 0.43434343434343436, recall: 0.40186915887850466
+	False True
+false_pos: 61, false neg: 41, true pos: 66, true neg: 185
+accuracy: 0.7110481586402266, pres: 0.5196850393700787, recall: 0.616822429906542
+	False False
+false_pos: 82, false neg: 37, true pos: 70, true neg: 164
+accuracy: 0.6628895184135978, pres: 0.4605263157894737, recall: 0.6542056074766355
+	minPeakHeight: 20
+	True True
+false_pos: 39, false neg: 63, true pos: 44, true neg: 207
+accuracy: 0.7110481586402266, pres: 0.5301204819277109, recall: 0.411214953271028
+	True False
+false_pos: 53, false neg: 62, true pos: 45, true neg: 193
+accuracy: 0.6742209631728046, pres: 0.45918367346938777, recall: 0.4205607476635514
+	False True
+false_pos: 59, false neg: 39, true pos: 68, true neg: 187
+accuracy: 0.7223796033994334, pres: 0.5354330708661418, recall: 0.6355140186915887
+	False False
+false_pos: 78, false neg: 35, true pos: 72, true neg: 168
+accuracy: 0.6798866855524079, pres: 0.48, recall: 0.6728971962616822
+	minPeakHeight: 21
+	True True
+false_pos: 43, false neg: 64, true pos: 43, true neg: 203
+accuracy: 0.6968838526912181, pres: 0.5, recall: 0.40186915887850466
+	True False
+false_pos: 58, false neg: 63, true pos: 44, true neg: 188
+accuracy: 0.6572237960339944, pres: 0.43137254901960786, recall: 0.411214953271028
+	False True
+false_pos: 63, false neg: 43, true pos: 64, true neg: 183
+accuracy: 0.6997167138810199, pres: 0.5039370078740157, recall: 0.5981308411214953
+	False False
+false_pos: 83, false neg: 40, true pos: 67, true neg: 163
+accuracy: 0.6515580736543909, pres: 0.44666666666666666, recall: 0.6261682242990654
+	minPeakHeight: 22
+	True True
+false_pos: 45, false neg: 71, true pos: 36, true neg: 201
+accuracy: 0.6713881019830028, pres: 0.4444444444444444, recall: 0.3364485981308411
+	True False
+false_pos: 60, false neg: 70, true pos: 37, true neg: 186
+accuracy: 0.6317280453257791, pres: 0.38144329896907214, recall: 0.34579439252336447
+	False True
+false_pos: 65, false neg: 50, true pos: 57, true neg: 181
+accuracy: 0.6742209631728046, pres: 0.4672131147540984, recall: 0.5327102803738317
+	False False
+false_pos: 85, false neg: 47, true pos: 60, true neg: 161
+accuracy: 0.6260623229461756, pres: 0.41379310344827586, recall: 0.5607476635514018
+	minPeakHeight: 23
+	True True
+false_pos: 46, false neg: 75, true pos: 32, true neg: 200
+accuracy: 0.6572237960339944, pres: 0.41025641025641024, recall: 0.29906542056074764
+	True False
+false_pos: 61, false neg: 74, true pos: 33, true neg: 185
+accuracy: 0.6175637393767706, pres: 0.35106382978723405, recall: 0.308411214953271
+	False True
+false_pos: 66, false neg: 55, true pos: 52, true neg: 180
+accuracy: 0.6572237960339944, pres: 0.4406779661016949, recall: 0.48598130841121495
+	False False
+false_pos: 87, false neg: 52, true pos: 55, true neg: 159
+accuracy: 0.6062322946175638, pres: 0.3873239436619718, recall: 0.514018691588785
+	minPeakHeight: 24
+	True True
+false_pos: 45, false neg: 78, true pos: 29, true neg: 201
+accuracy: 0.6515580736543909, pres: 0.3918918918918919, recall: 0.27102803738317754
+	True False
+false_pos: 60, false neg: 77, true pos: 30, true neg: 186
+accuracy: 0.6118980169971672, pres: 0.3333333333333333, recall: 0.2803738317757009
+	False True
+false_pos: 64, false neg: 58, true pos: 49, true neg: 182
+accuracy: 0.6543909348441926, pres: 0.4336283185840708, recall: 0.45794392523364486
+	False False
+false_pos: 84, false neg: 55, true pos: 52, true neg: 162
+accuracy: 0.6062322946175638, pres: 0.38235294117647056, recall: 0.48598130841121495
+	minPeakHeight: 25
+	True True
+false_pos: 42, false neg: 78, true pos: 29, true neg: 204
+accuracy: 0.660056657223796, pres: 0.4084507042253521, recall: 0.27102803738317754
+	True False
+false_pos: 56, false neg: 78, true pos: 29, true neg: 190
+accuracy: 0.6203966005665722, pres: 0.3411764705882353, recall: 0.27102803738317754
+	False True
+false_pos: 60, false neg: 58, true pos: 49, true neg: 186
+accuracy: 0.6657223796033994, pres: 0.44954128440366975, recall: 0.45794392523364486
+	False False
+false_pos: 80, false neg: 56, true pos: 51, true neg: 166
+accuracy: 0.6147308781869688, pres: 0.3893129770992366, recall: 0.4766355140186916
+	minPeakHeight: 26
+	True True
+false_pos: 41, false neg: 81, true pos: 26, true neg: 205
+accuracy: 0.6543909348441926, pres: 0.3880597014925373, recall: 0.24299065420560748
+	True False
+false_pos: 53, false neg: 81, true pos: 26, true neg: 193
+accuracy: 0.6203966005665722, pres: 0.3291139240506329, recall: 0.24299065420560748
+	False True
+false_pos: 60, false neg: 61, true pos: 46, true neg: 186
+accuracy: 0.6572237960339944, pres: 0.4339622641509434, recall: 0.42990654205607476
+	False False
+false_pos: 77, false neg: 59, true pos: 48, true neg: 169
+accuracy: 0.6147308781869688, pres: 0.384, recall: 0.4485981308411215
+	minPeakHeight: 27
+	True True
+false_pos: 41, false neg: 85, true pos: 22, true neg: 205
+accuracy: 0.6430594900849859, pres: 0.3492063492063492, recall: 0.205607476635514
+	True False
+false_pos: 51, false neg: 85, true pos: 22, true neg: 195
+accuracy: 0.6147308781869688, pres: 0.3013698630136986, recall: 0.205607476635514
+	False True
+false_pos: 61, false neg: 66, true pos: 41, true neg: 185
+accuracy: 0.6402266288951841, pres: 0.4019607843137255, recall: 0.38317757009345793
+	False False
+false_pos: 76, false neg: 64, true pos: 43, true neg: 170
+accuracy: 0.603399433427762, pres: 0.36134453781512604, recall: 0.40186915887850466
+	minPeakHeight: 28
+	True True
+false_pos: 41, false neg: 86, true pos: 21, true neg: 205
+accuracy: 0.6402266288951841, pres: 0.3387096774193548, recall: 0.19626168224299065
+	True False
+false_pos: 51, false neg: 86, true pos: 21, true neg: 195
+accuracy: 0.6118980169971672, pres: 0.2916666666666667, recall: 0.19626168224299065
+	False True
+false_pos: 62, false neg: 68, true pos: 39, true neg: 184
+accuracy: 0.6317280453257791, pres: 0.38613861386138615, recall: 0.3644859813084112
+	False False
+false_pos: 76, false neg: 66, true pos: 41, true neg: 170
+accuracy: 0.5977337110481586, pres: 0.3504273504273504, recall: 0.38317757009345793
+	minPeakHeight: 29
+	True True
+false_pos: 37, false neg: 87, true pos: 20, true neg: 209
+accuracy: 0.6487252124645893, pres: 0.3508771929824561, recall: 0.18691588785046728
+	True False
+false_pos: 46, false neg: 87, true pos: 20, true neg: 200
+accuracy: 0.623229461756374, pres: 0.30303030303030304, recall: 0.18691588785046728
+	False True
+false_pos: 57, false neg: 67, true pos: 40, true neg: 189
+accuracy: 0.6487252124645893, pres: 0.41237113402061853, recall: 0.37383177570093457
+	False False
+false_pos: 70, false neg: 66, true pos: 41, true neg: 176
+accuracy: 0.6147308781869688, pres: 0.36936936936936937, recall: 0.38317757009345793
