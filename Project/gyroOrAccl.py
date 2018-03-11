@@ -117,9 +117,9 @@ class GyroOrAccel(object):
                     final_indexes.append(peak_pos)
         return final_indexes
 
-    def is_fall(self, extra=[True, True], timeIntMag=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5):
+    def is_fall(self, extra=[True, True], timeInterval=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5):
         ys = self.__dict__["mags"]
-        indexes = self.getSingularPeaks(ys, timeIntMag, minPeakHeight, window_length, polyorder)
+        indexes = self.getSingularPeaks(ys, timeInterval, minPeakHeight, window_length, polyorder)
         if len(indexes) == 0:
             return indexes
         if extra[0]:

@@ -4,6 +4,7 @@ import os
 import json
 import regex as re
 import matplotlib.pyplot as plt
+import numpy as np
 
 from gyroOrAccl import GyroOrAccel
 
@@ -112,7 +113,7 @@ def separate_files(files, group_by=[POSITIVE]):
             ret.append(new_dict)
     return ret
 
-def sep_files_by_fall(folder, extra=[True, True], timeIntMag=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
+def sep_files_by_fall(folder, extra=[True, True], timeInterval=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
     mult_falls = []
     one_fall = []
     no_falls = []
@@ -121,7 +122,7 @@ def sep_files_by_fall(folder, extra=[True, True], timeIntMag=1.5, timeIntNeg=0.0
         with open(filepath) as f:
             data = f.read().split("\n")
         abso = GyroOrAccel("Absolute", data, file)
-        fall_res = abso.is_fall(extra, timeIntMag, timeIntNeg, negPeakHeight, minPeakHeight, window_length, polyorder, thres)
+        fall_res = abso.is_fall(extra, timeInterval, timeIntNeg, negPeakHeight, minPeakHeight, window_length, polyorder, thres)
         if len(fall_res) == 0:
             no_falls.append(file)
         elif len(fall_res) == 1:
@@ -132,8 +133,8 @@ def sep_files_by_fall(folder, extra=[True, True], timeIntMag=1.5, timeIntNeg=0.0
             "multiple detected": mult_falls,
             "none detected": no_falls}
 
-def sep_files_by_type_and_fall(folder, extra=[True, True], timeIntMag=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
-    num_peaks_dict = sep_files_by_fall(folder, extra, timeIntMag, timeIntNeg, negPeakHeight, minPeakHeight, window_length, polyorder, thres)
+def sep_files_by_type_and_fall(folder, extra=[True, True], timeInterval=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
+    num_peaks_dict = sep_files_by_fall(folder, extra, timeInterval, timeIntNeg, negPeakHeight, minPeakHeight, window_length, polyorder, thres)
     ret_dict = {}
     for num_key in num_peaks_dict:
         files = num_peaks_dict[num_key]
@@ -181,18 +182,19 @@ def get_truths(folder, timeInterval=1.5, minPeakHeight=25):
             true_positives = item["num"]
     return float(true_positives)/total_detections
 
-def get_num_detected_each_cat(folder, extra=[True, True], timeIntMag=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
-    separated = sep_files_by_type_and_fall(folder, extra, timeIntMag, timeIntNeg, negPeakHeight, minPeakHeight, window_length, polyorder, thres)
+def get_num_detected_each_cat(folder, extra=[True, True], timeInterval=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
+    separated = sep_files_by_type_and_fall(folder, extra, timeInterval, timeIntNeg, negPeakHeight, minPeakHeight, window_length, polyorder, thres)
     ret_dict = {}
     for num_key in separated:
         ret_dict[num_key] = []
         for item in separated[num_key]:
             item_dict = {"label": item["label"], "num": len(item["files"])}
             ret_dict[num_key].append(item_dict)
+    print(ret_dict)
     return ret_dict
 
-def print_num_detected_each_cat(folder, extra=[True, True], timeIntMag=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
-    separated = sep_files_by_type_and_fall(folder, extra, timeIntMag, timeIntNeg, negPeakHeight, minPeakHeight, window_length, polyorder, thres)
+def print_num_detected_each_cat(folder, extra=[True, True], timeInterval=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
+    separated = sep_files_by_type_and_fall(folder, extra, timeInterval, timeIntNeg, negPeakHeight, minPeakHeight, window_length, polyorder, thres)
     false_pos = 0
     false_neg = 0
     truth_pos = 0
@@ -350,7 +352,7 @@ if __name__ == '__main__':
     # #     abso.plotSingluarPeaks()
     # #     if accl.is_fall():
     # #         print("\t%s" % "is Fall!")
-    # for i in [0, 2, 16, 17]:
+    # for i in range(30):
     #     print("\tminPeakHeight: " + str(i))
     #     print("\tTrue True")
     #     print_num_detected_each_cat(folder, [True, True], 1.5, 0.01, 5, i, group_by=[POSITIVE])
@@ -359,4 +361,4 @@ if __name__ == '__main__':
     #     print("\tFalse True")
     #     print_num_detected_each_cat(folder, [False, True], 1.5, 0.01, 5, i, group_by=[POSITIVE])
     #     print("\tFalse False")
-        # print_num_detected_each_cat(folder, [False, False], 1.5, 0.01, 5, i, group_by=[POSITIVE])
+    #     print_num_detected_each_cat(folder, [False, False], 1.5, 0.01, 5, i, group_by=[POSITIVE])
