@@ -233,6 +233,42 @@ def get_recall_and_precision(folder, timeInterval=1.5, minPeakHeight=3, group_by
     precision = float(true_positives)/total_detections
     return recall, precision
 
+def get_accuracy(folder, timeInterval=1.5, minPeakHeight=3, group_by=[POSITIVE], phrase="", extra=[True, True]):
+    detection_dict = get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=group_by, extra=extra)
+    # print(json.dumps(detection_dict, indent=4))
+    true_positives = 0
+    true_negatives = 0
+    false_positives = 0
+    false_negatives = 0
+    print(phrase)
+    for item in detection_dict["one detected"]:
+        if phrase in item["label"]:
+            if "Fall" in item["label"]:
+                true_positives = item["num"]
+            elif "Not fall" in item["label"]:
+                false_positives = item["num"]
+    for item in detection_dict["none detected"]:
+        if phrase in item["label"]:
+            if "Not fall" in item["label"]:
+                true_negatives = item["num"] 
+            elif "Fall" in item["label"]:
+                false_negatives = item["num"]
+    total = true_negatives + true_positives + false_negatives + false_positives
+    print(true_negatives, true_negatives, total)
+    try:
+        accuracy = float(true_negatives + true_positives) / total
+    except:
+        accuracy = -1.
+    try:
+        precision = float(true_positives) / (true_positives + false_positives)
+    except:
+        precision = -1.
+    try:
+        recall = float(true_positives) / (true_positives + false_negatives)
+    except:
+        recall = -1.
+    return accuracy, precision, recall
+
 def get_truth_by_category(folder, categories, cat_type, first_fall_cat, minPeakHeight=3, extra=[False, True]):
     detection_dict = get_num_detected_each_cat(folder, timeInterval=1.5, minPeakHeight=minPeakHeight, group_by=[POSITIVE, cat_type], extra=extra)
     pos_dict = {}
@@ -290,6 +326,18 @@ def optimize_recall_and_precision(folder):
             best_ovearll_precision_minPeakHeight = minPeakHeight
     return best_minPeakHeight, best_recall, best_precision
 
+def get_accuracy_dict(folder, categories, cat_type, minPeakHeight=3, extra=[False, True]):
+    acc_dict = {}
+    prec_dict = {}
+    rec_dict = {}
+    for cat in categories:
+        accuracy, precision, recall = get_accuracy(folder, phrase=cat, minPeakHeight=minPeakHeight, group_by=[POSITIVE, cat_type], extra=extra)
+        acc_dict[cat] = accuracy
+        prec_dict[cat] = precision
+        rec_dict[cat] = recall
+    return acc_dict, prec_dict, rec_dict
+
+
 def plot_results():
     folder = "finaldata"
     categorize_file(file_1)
@@ -315,46 +363,19 @@ def print_results(folder, timeInterval=1.5, minPeakHeight=25, group_by=[POSITIVE
     print(json.dumps(get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=group_by), indent=4))
 
 if __name__ == '__main__':
-    plot_results()
-    # res = get_truth_by_category(folder, scenarios, 10)
-    # print(res)
+    # plot_results()
+    folder = "finaldata"
+    categories = people
+    cat_type = PERSON
+    acc_dict, prec_dict, rec_dict = get_accuracy_dict(folder, categories, cat_type, minPeakHeight=3, extra=[False, True])
+    print(acc_dict)
+    print(prec_dict)
+    print(rec_dict)
 
-    # for scenario in scenarios:
-    #     # print("minPeakHeight: %d" % minPeakHeight)
-    #     # print_results(folder, timeInterval=1.5, minPeakHeight=minPeakHeight, group_by=[POSITIVE, DEVICE])
-    #     recall, precision = get_recall_and_precision(folder, timeInterval=1.5, group_by=[POSITIVE, SCENARIO], minPeakHeight=minPeakHeight, phrase=scenario)
-    #     print("%s accuracy\n\trecall: %f, precision: %f" % (scenario, recall, precision))
-
-    # print(get_num_detected_each_cat("finaldata"))
-    # print(get_precision("finaldata"))
-    # print(get_recall("finaldata"))
-    # print(optimize_recall_and_precision(folder))
-    # files = None
     # folder = "finaldata"
-    # all_files = sorted(os.listdir(folder))
-    # files = all_files
-    # categorised = separate_files(all_files, group_by=[1])
-    # for dic in categorised:
-    #     if dic["label"] == "Fall":
-    #         files = dic["files"]
-    # if files == None:
-    #     print("no files picked up")
-    # # for filename in files:
-    # #     print(filename)
-    # #     filepath = os.path.join(folder, filename)
-    # #     with open(filepath) as f:
-    # #         data = f.read().split("\n")
-    # #     abso = GyroOrAccel("Absolute", data, filename)
-    # #     abso.plotSingluarPeaks()
-    # #     if accl.is_fall():
-    # #         print("\t%s" % "is Fall!")
-    # for i in range(30):
-    #     print("\tminPeakHeight: " + str(i))
-    #     print("\tTrue True")
-    #     print_num_detected_each_cat(folder, [True, True], 1.5, 0.01, 5, i, group_by=[POSITIVE])
-    #     print("\tTrue False")
-    #     print_num_detected_each_cat(folder, [True, False], 1.5, 0.01, 5, i, group_by=[POSITIVE])
-    #     print("\tFalse True")
-    #     print_num_detected_each_cat(folder, [False, True], 1.5, 0.01, 5, i, group_by=[POSITIVE])
-    #     print("\tFalse False")
-    #     print_num_detected_each_cat(folder, [False, False], 1.5, 0.01, 5, i, group_by=[POSITIVE])
+    categories = devices
+    cat_type = DEVICE
+    acc_dict, prec_dict, rec_dict = get_accuracy_dict(folder, categories, cat_type, minPeakHeight=3, extra=[False, True])
+    print(acc_dict)
+    print(prec_dict)
+    print(rec_dict)
