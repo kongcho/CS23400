@@ -240,7 +240,6 @@ def get_accuracy(folder, timeInterval=1.5, minPeakHeight=3, group_by=[POSITIVE],
     true_negatives = 0
     false_positives = 0
     false_negatives = 0
-    print(phrase)
     for item in detection_dict["one detected"]:
         if phrase in item["label"]:
             if "Fall" in item["label"]:
@@ -254,7 +253,6 @@ def get_accuracy(folder, timeInterval=1.5, minPeakHeight=3, group_by=[POSITIVE],
             elif "Fall" in item["label"]:
                 false_negatives = item["num"]
     total = true_negatives + true_positives + false_negatives + false_positives
-    print(true_negatives, true_negatives, total)
     try:
         accuracy = float(true_negatives + true_positives) / total
     except:
@@ -357,25 +355,90 @@ def plot_results():
         plt.show()
 
 
+def plot_acc_precis_recall(folder, categories, cat_type, minPeakHeight=3, extra=[False,True]):
+    acc_dict, prec_dict, rec_dict = get_accuracy_dict(folder, categories, cat_type, minPeakHeight=minPeakHeight, extra=extra)
+    keys = acc_dict.keys()
+    acc = acc_dict.values()
+    precis = prec_dict.values()
+    recall = rec_dict.values() 
+
+    N = len(keys)   
+
+    ind = np.arange(N)  # the x locations for the groups
+    width = 0.24      # the width of the bars
+
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(ind, acc, width, color='r')
+    rects2 = ax.bar(ind + width, precis, width, color='y')
+    rects3 = ax.bar(ind + 2 * width, recall, width, color='g')
+
+    # add some text for labels, title and axes ticks
+    ax.set_ylabel('Scores')
+    ax.set_title('Accuracy, precision, and recall')
+    ax.set_xticks(ind + width / 2)
+    ax.set_xticklabels(keys)
+
+    ax.legend((rects1[0], rects2[0], rects3[0]), ('Accuracy', 'Precision', 'Recall'))
+
+    plt.show()
+
+def plot_algo_differences(folder, minPeakHeight=3):
+    keys = ["Algo A and B", "Algo A only", "Algo B only", "Original algorithm"]
+    accs = []
+    precis = []
+    recalls = []
+    for extra in [[True, True], [True, False], [False, True], [False, False]]:
+        accuracy, precision, recall = get_accuracy(folder, timeInterval=1.5, minPeakHeight=3, group_by=[POSITIVE], phrase="", extra=extra)
+        accs.append(accuracy)
+        precis.append(precision)
+        recalls.append(recall)
+
+    N = len(keys)   
+
+    ind = np.arange(N)  # the x locations for the groups
+    width = 0.24      # the width of the bars
+
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(ind - width, accs, width, color='r')
+    rects2 = ax.bar(ind, precis, width, color='y')
+    rects3 = ax.bar(ind + width, recalls, width, color='g')
+
+    # add some text for labels, title and axes ticks
+    ax.set_ylabel('Scores')
+    ax.set_title('Accuracy, precision, and recall')
+    ax.set_xticks(ind + width / 2)
+    ax.set_xticklabels(keys)
+
+    ax.legend((rects1[0], rects2[0], rects3[0]), ('Accuracy', 'Precision', 'Recall'))
+
+    plt.show()
+
+
+
 def print_results(folder, timeInterval=1.5, minPeakHeight=25, group_by=[POSITIVE, SCENARIO]):
     print(get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=[POSITIVE]))
     print("\n")
     print(json.dumps(get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=group_by), indent=4))
 
 if __name__ == '__main__':
-    # plot_results()
-    folder = "finaldata"
-    categories = people
-    cat_type = PERSON
-    acc_dict, prec_dict, rec_dict = get_accuracy_dict(folder, categories, cat_type, minPeakHeight=3, extra=[False, True])
-    print(acc_dict)
-    print(prec_dict)
-    print(rec_dict)
+    # plot_acc_precis_recall()
 
+    # # plot_results()
     # folder = "finaldata"
-    categories = devices
-    cat_type = DEVICE
-    acc_dict, prec_dict, rec_dict = get_accuracy_dict(folder, categories, cat_type, minPeakHeight=3, extra=[False, True])
-    print(acc_dict)
-    print(prec_dict)
-    print(rec_dict)
+    # categories = people
+    # cat_type = PERSON
+    # acc_dict, prec_dict, rec_dict = get_accuracy_dict(folder, categories, cat_type, minPeakHeight=3, extra=[False, True])
+    # print(acc_dict)
+    # print(prec_dict)
+    # print(rec_dict)
+
+    folder = "finaldata"
+    # categories = scenarios
+    # cat_type = SCENARIO
+    # plot_acc_precis_recall(folder, categories, cat_type, minPeakHeight=3, extra=[False, True])
+
+    plot_algo_differences(folder)
+
+    # for extra in [[True, True], [True, False], [False, True], [False, False]]:
+    #     print(extra)
+    #     print(get_accuracy(folder, timeInterval=1.5, minPeakHeight=3, group_by=[POSITIVE], phrase="", extra=extra))
