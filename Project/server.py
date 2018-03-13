@@ -5,6 +5,12 @@ import datetime
 
 uuid = "54c7001e-263c-4fb6-bfa7-2dfe5fba0f5b"
 
+def make_sound():
+    duration = 0.1  # second
+    freq = 440  # Hz
+    os.system('play --no-show-progress --null --channels 1 synth %s sine %f' % (duration, freq))
+    return 0
+
 def flatten_list(arrs):
     full_list = []
     for arr in arrs:
@@ -12,9 +18,10 @@ def flatten_list(arrs):
     return full_list
 
 def analyse_string(data):
-    accl = GyroOrAccel("Accelerometer", data)
-    return accl.hasPeak()
+    accl = GyroOrAccel("Absolute", data)
+    return accl.isfall(extra=[False, True])
 
+# runs server real time to demo the results real time
 def run_server(second=1):
     epoch = time.time()
     curr_data = []
@@ -63,8 +70,7 @@ def run_server(second=1):
                     is_single_peak = analyse_string(send_data)
                     print("%s\t%s\t%s" % (value.strftime('%Y-%m-%d %H:%M:%S.%f'), \
                                           len(send_data), is_single_peak))
-                    client_sock.send("EH")
-                    # client_sock.send(str(is_single_peak))
+                    client_sock.send(str(is_single_peak))
                     start_time = time.time()
                 curr_strs = []
             else:
@@ -80,7 +86,7 @@ def run_server(second=1):
 
     return 0
 
-
+# logs real time data to file
 def run_server_instance_to_file(filename):
     server_sock=BluetoothSocket( RFCOMM )
     server_sock.bind(("",PORT_ANY))
