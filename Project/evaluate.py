@@ -405,7 +405,7 @@ def plot_algo_differences(folder, minPeakHeight=3):
 
     # add some text for labels, title and axes ticks
     ax.set_ylabel('Scores')
-    ax.set_title('Accuracy, precision, and recall')
+    ax.set_title('Accuracy, precision, and recall for different algorithms')
     ax.set_xticks(ind + width / 2)
     ax.set_xticklabels(keys)
 
