@@ -13,6 +13,7 @@ class GyroOrAccel(object):
     measTypes = ["Linear", "Absolute"]
     measurements = ["xs", "ys", "zs", "mags", "magxy"]
 
+    # uses parsed data to create variables we're going to use in the algorithm
     def __init__(self, measType, rawdata, filename=None):
         assert measType in self.measTypes
         if filename:
@@ -37,6 +38,7 @@ class GyroOrAccel(object):
             self.magxy.append(magxy)
             self.mags.append(mag)
 
+    # makes plots for each measurement for a given data set
     def plot(self):
          i=1
          plt.figure(1).set_size_inches(24,48)
@@ -49,11 +51,13 @@ class GyroOrAccel(object):
              plt.grid(True)
          plt.show()
 
+    # applies noise filter and gets peak indexes
     def getPeakIndexes(self, ys, window_length, polyorder, thres=0.8):
         ys = savgol_filter(ys, window_length, polyorder)
         indexes = peakutils.indexes(ys, thres)
         return indexes
 
+    # plots for the acceleration magnitude a(x, y, z)
     def findImpulse(self, window_length=41, polyorder=12, thres=0.8):
         plt.figure(1).set_size_inches(24,48)
         xs = np.array(self.times)
@@ -64,6 +68,7 @@ class GyroOrAccel(object):
         plt.title("%s %s for %s" % (self.measType, ylabel, self.filename))
         plt.show()
 
+    # removes indexes close to each other that have a dip in between
     def removeClosePeaks(self, idxs, ys, minDipHeight):
         if len(idxs) in [0,1]:
             return idxs
@@ -75,6 +80,7 @@ class GyroOrAccel(object):
                     continue
         return peaksWithDips
 
+    # defines multiple close peaks as a singular peak
     def getSingularPeaks(self, ys, timeInterval=1.5, minPeakHeight=25, window_length=41, polyorder=12, thres=0.8):
         idxs = self.getPeakIndexes(ys, window_length=window_length, polyorder=polyorder, thres=thres)
 
@@ -105,6 +111,7 @@ class GyroOrAccel(object):
                 singularPeaks.append(idxs[i])
         return singularPeaks
 
+    # determines if the graph has a negative peak before a given peak index
     def down_and_up(self, ylabel, peaks_pos, timeInterval=1.5, minNegPeakHeight=1, window_length=41, polyorder=12, thres=0.5):
         final_indexes = []
         ys_neg = np.negative(np.array(self.__dict__[ylabel]))
@@ -117,6 +124,8 @@ class GyroOrAccel(object):
                     final_indexes.append(peak_pos)
         return final_indexes
 
+    # main algorithm to determine if a given data set has a fall or not (and when)
+    # first applies basic algorithm to pick up peaks, then applies 2 optional filters
     def is_fall(self, extra=[True, True], timeInterval=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5):
         ys = self.__dict__["mags"]
         indexes = self.getSingularPeaks(ys, timeInterval, minPeakHeight, window_length, polyorder)
@@ -132,6 +141,7 @@ class GyroOrAccel(object):
             indexes = self.down_and_up("zs", indexes, timeIntNeg, negPeakHeight, window_length, polyorder, thres)
         return indexes
 
+    # plots peaks based on the basic algorithm and on acceleration magnitude
     def plotSingluarPeaksMag(self, timeInterval=1.5, minPeakHeight=25, window_length=41, polyorder=12):
         plt.figure(1).set_size_inches(24,48)
         xs = np.array(self.times)
@@ -143,6 +153,7 @@ class GyroOrAccel(object):
         plt.title("%s %s for %s" % (self.measType, "mags", self.filename))
         plt.show()
 
+    # plots each measurement and looks at the peaks determined by the basic algorithm
     def plotSingluarPeaks(self, timeInterval=1.5, minPeakHeight=25, window_length=41, polyorder=12):
         i = 1
         plt.figure(1).set_size_inches(24,48)
@@ -157,6 +168,7 @@ class GyroOrAccel(object):
             i += 1
         plt.show()
 
+    # plots the peaks determined by the algorithm with filters
     def plotFinalAlgoPeaks(self, extra=[True, True]):
         i = 1
         plt.figure(1).set_size_inches(24,48)
@@ -172,14 +184,12 @@ class GyroOrAccel(object):
         plt.show()
 
 if __name__ == '__main__':
-    folder = "./FallChoLucy/"
+    folder = "./finaldata/"
     files = sorted(os.listdir(folder))
     for filename in files:
         print(filename)
         filepath = os.path.join(folder, filename)
         with open(filepath) as f:
             data = f.read().split("\n")
-        accl = GyroOrAccel("Linear", data, filename)
         abso = GyroOrAccel("Absolute", data, filename)
-        accl.plotSingluarPeaks()
         abso.plotSingluarPeaks()
