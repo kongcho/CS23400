@@ -8,6 +8,7 @@ import numpy as np
 
 from gyroOrAccl import GyroOrAccel
 
+# sample file strings for parsing
 file_1 = "log_00_01_02_00_04.txt"
 file_2 = "log_00_02_03_01_04.txt"
 file_3 = "log_01_11_02_00_04.txt"
@@ -36,31 +37,35 @@ people = ["Natalia", "Cho Yin", "Lucy", "Poorvaja",
     "Clay", "Annalie", "Karlyn", "Najee",
     "Gamal", "Daniel", "Gaibo", "Aaron"]
 
+# convert positive number to string
 def positive_to_string(pos_index):
     if pos_index in [0,1]:
         return positives[pos_index]
     else:
         raise ValueError("Positive value must be 0 or 1")
 
+# convert scenario number to string
 def scenario_to_string(scenario_index):
     if 0 <= scenario_index < 22:
         return scenarios[scenario_index] 
     else:
         raise ValueError("Invalid scenario value")
 
+# convert device number to string
 def device_to_string(device_index):
     if 0 <= device_index < 2:
         return devices[device_index]
     else:
         raise ValueError("Invalid device value")
 
+# convert person number to string
 def person_to_string(person_index):
     if 0 <= person_index < 16:
         return people[person_index]
     else:
         raise ValueError("Invalid person value")
 
-
+# convert dictionary of categories to array of strings
 def cat_dict_to_string_dict(cat_dict):
     ret_arr = []
     for cat in cat_dict:
@@ -79,10 +84,12 @@ def cat_dict_to_string_dict(cat_dict):
             raise ValueError
     return ret_arr
 
+# convert dictionary of categories to a single string label
 def cat_dict_to_string(cat_dict):
     string_dict = cat_dict_to_string_dict(cat_dict)
     return "; ".join(string_dict)
 
+# categorize a file by types
 def categorize_file(filename, group_by=[POSITIVE]):
     regex = "log_(\d+)_(\d+)_(\d+)_(\d+)_(\d+).txt"
     m = re.match(regex, filename)
@@ -96,7 +103,7 @@ def categorize_file(filename, group_by=[POSITIVE]):
         cat_dict[cat] = int(m.group(cat))
     return cat_dict
 
-## {"categories": {1: 0, 2: 1}, "files": []}
+## separate a list of files by label types
 def separate_files(files, group_by=[POSITIVE]):
     ret = []
     for filename in files:
@@ -113,6 +120,7 @@ def separate_files(files, group_by=[POSITIVE]):
             ret.append(new_dict)
     return ret
 
+# separate files by detected type
 def sep_files_by_fall(folder, extra=[True, True], timeInterval=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
     mult_falls = []
     one_fall = []
@@ -133,6 +141,7 @@ def sep_files_by_fall(folder, extra=[True, True], timeInterval=1.5, timeIntNeg=0
             "multiple detected": mult_falls,
             "none detected": no_falls}
 
+# separate files by label and detected
 def sep_files_by_type_and_fall(folder, extra=[True, True], timeInterval=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=3, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
     num_peaks_dict = sep_files_by_fall(folder, extra=extra, timeInterval=timeInterval, timeIntNeg=timeIntNeg, negPeakHeight=negPeakHeight,
      minPeakHeight=minPeakHeight, window_length=window_length, polyorder=polyorder, thres=thres, group_by=group_by)
@@ -143,6 +152,7 @@ def sep_files_by_type_and_fall(folder, extra=[True, True], timeInterval=1.5, tim
         ret_dict[num_key] = separated
     return ret_dict
 
+# get recall
 def get_recall(folder, timeInterval=1.5, minPeakHeight=3):
     detection_dict = get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=[POSITIVE])
     total_falls = 0 
@@ -155,6 +165,7 @@ def get_recall(folder, timeInterval=1.5, minPeakHeight=3):
                 total_falls += item["num"]
     return float(true_positives)/total_falls
 
+# get precision
 def get_precision(folder, timeInterval=1.5, minPeakHeight=25):
     detection_dict = get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=[POSITIVE])
     total_trials = detection_dict["one detected"][0]["num"] + detection_dict["one detected"][1]["num"] \
@@ -165,14 +176,7 @@ def get_precision(folder, timeInterval=1.5, minPeakHeight=25):
             true_positives = item["num"]
     return float(true_positives)/total_detections
 
-def get_truths(folder, timeInterval=1.5, minPeakHeight=3):
-    detection_dict = get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=[POSITIVE])
-    total_detections = detection_dict["one detected"][0]["num"] + detection_dict["one detected"][1]["num"]
-    for item in detection_dict["one detected"]:
-        if item["label"] == "Fall":
-            true_positives = item["num"]
-    return float(true_positives)/total_detections
-
+# get the number detected in each category
 def get_num_detected_each_cat(folder, extra=[True, True], timeInterval=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=3, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
     separated = sep_files_by_type_and_fall(folder, extra=extra, timeInterval=timeInterval, timeIntNeg=timeIntNeg, negPeakHeight=negPeakHeight,\
      minPeakHeight=minPeakHeight, window_length=window_length, polyorder=polyorder, thres=thres, group_by=group_by)
@@ -184,6 +188,7 @@ def get_num_detected_each_cat(folder, extra=[True, True], timeInterval=1.5, time
             ret_dict[num_key].append(item_dict)
     return ret_dict
 
+# print the number detected in each category
 def print_num_detected_each_cat(folder, extra=[True, True], timeInterval=1.5, timeIntNeg=0.01, negPeakHeight=5, minPeakHeight=16, window_length=41, polyorder=12, thres=0.5, group_by=[POSITIVE]):
     separated = sep_files_by_type_and_fall(folder, extra, timeInterval, timeIntNeg, negPeakHeight, minPeakHeight, window_length, polyorder, thres)
     false_pos = 0
@@ -211,6 +216,8 @@ def print_num_detected_each_cat(folder, extra=[True, True], timeInterval=1.5, ti
     print("accuracy: %s, pres: %s, recall: %s" % (((truth_pos + truth_neg)/sum), (truth_pos/(truth_pos + false_pos)), (truth_pos/(truth_pos + false_neg))))
     return separated
 
+# get recall and precision
+# return -1 for not enough data
 def get_recall_and_precision(folder, timeInterval=1.5, minPeakHeight=3, group_by=[POSITIVE], phrase="", extra=[True, True]):
     detection_dict = get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=group_by, extra=extra)
     # print(json.dumps(detection_dict, indent=4))
@@ -233,6 +240,7 @@ def get_recall_and_precision(folder, timeInterval=1.5, minPeakHeight=3, group_by
     precision = float(true_positives)/total_detections
     return recall, precision
 
+# get accuracy, recall, and precision
 def get_accuracy(folder, timeInterval=1.5, minPeakHeight=3, group_by=[POSITIVE], phrase="", extra=[True, True]):
     detection_dict = get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=group_by, extra=extra)
     # print(json.dumps(detection_dict, indent=4))
@@ -267,6 +275,7 @@ def get_accuracy(folder, timeInterval=1.5, minPeakHeight=3, group_by=[POSITIVE],
         recall = -1.
     return accuracy, precision, recall
 
+# get the fraction correct by category
 def get_truth_by_category(folder, categories, cat_type, first_fall_cat, minPeakHeight=3, extra=[False, True]):
     detection_dict = get_num_detected_each_cat(folder, timeInterval=1.5, minPeakHeight=minPeakHeight, group_by=[POSITIVE, cat_type], extra=extra)
     pos_dict = {}
@@ -298,6 +307,7 @@ def get_truth_by_category(folder, categories, cat_type, first_fall_cat, minPeakH
             pos_dict[cat] = accuracy
     return neg_dict, pos_dict
 
+# function for finding the best minPeakHeight
 def optimize_recall_and_precision(folder):
     best_recall = 0
     best_precision = 0
@@ -324,6 +334,7 @@ def optimize_recall_and_precision(folder):
             best_ovearll_precision_minPeakHeight = minPeakHeight
     return best_minPeakHeight, best_recall, best_precision
 
+# get dictionaries for accuracy, precision, and recall
 def get_accuracy_dict(folder, categories, cat_type, minPeakHeight=3, extra=[False, True]):
     acc_dict = {}
     prec_dict = {}
@@ -335,7 +346,7 @@ def get_accuracy_dict(folder, categories, cat_type, minPeakHeight=3, extra=[Fals
         rec_dict[cat] = recall
     return acc_dict, prec_dict, rec_dict
 
-
+# plot accuracy by category
 def plot_results():
     folder = "finaldata"
     categorize_file(file_1)
@@ -354,23 +365,17 @@ def plot_results():
         plt.title(title)
         plt.show()
 
-
-def plot_acc_precis_recall(folder, categories, cat_type, minPeakHeight=3, extra=[False,True]):
-    acc_dict, prec_dict, rec_dict = get_accuracy_dict(folder, categories, cat_type, minPeakHeight=minPeakHeight, extra=extra)
-    keys = acc_dict.keys()
-    acc = acc_dict.values()
-    precis = prec_dict.values()
-    recall = rec_dict.values() 
-
+# helper for plotting accuracy, precision, and recall
+def plot_acc_helper(keys, acc, precis, recall):
     N = len(keys)   
 
     ind = np.arange(N)  # the x locations for the groups
     width = 0.24      # the width of the bars
 
     fig, ax = plt.subplots()
-    rects1 = ax.bar(ind, acc, width, color='r')
-    rects2 = ax.bar(ind + width, precis, width, color='y')
-    rects3 = ax.bar(ind + 2 * width, recall, width, color='g')
+    rects1 = ax.bar(ind, acc, width, color='#3061b2')
+    rects2 = ax.bar(ind + width, precis, width, color='#4286f4')
+    rects3 = ax.bar(ind + 2 * width, recall, width, color='#7fafff')
 
     # add some text for labels, title and axes ticks
     ax.set_ylabel('Scores')
@@ -382,8 +387,19 @@ def plot_acc_precis_recall(folder, categories, cat_type, minPeakHeight=3, extra=
 
     plt.show()
 
+# plot accuracy, precision, and recall with a specific type
+def plot_acc_precis_recall(folder, categories, cat_type, minPeakHeight=3, extra=[False,True]):
+    acc_dict, prec_dict, rec_dict = get_accuracy_dict(folder, categories, cat_type, minPeakHeight=minPeakHeight, extra=extra)
+    keys = acc_dict.keys()
+    acc = acc_dict.values()
+    precis = prec_dict.values()
+    recall = rec_dict.values() 
+
+    plot_acc_helper(keys, acc, precis, recall)
+
+# plot differences between algorithms
 def plot_algo_differences(folder, minPeakHeight=3):
-    keys = ["Algo A and B", "Algo A only", "Algo B only", "Original algorithm"]
+    keys = ["Algo 1 and 2", "Algo 1 only", "Algo 2 only", "Original algorithm"]
     accs = []
     precis = []
     recalls = []
@@ -393,52 +409,23 @@ def plot_algo_differences(folder, minPeakHeight=3):
         precis.append(precision)
         recalls.append(recall)
 
-    N = len(keys)   
-
-    ind = np.arange(N)  # the x locations for the groups
-    width = 0.24      # the width of the bars
-
-    fig, ax = plt.subplots()
-    rects1 = ax.bar(ind - width, accs, width, color='r')
-    rects2 = ax.bar(ind, precis, width, color='y')
-    rects3 = ax.bar(ind + width, recalls, width, color='g')
-
-    # add some text for labels, title and axes ticks
-    ax.set_ylabel('Scores')
-    ax.set_title('Accuracy, precision, and recall for different algorithms')
-    ax.set_xticks(ind + width / 2)
-    ax.set_xticklabels(keys)
-
-    ax.legend((rects1[0], rects2[0], rects3[0]), ('Accuracy', 'Precision', 'Recall'))
-
-    plt.show()
+    plot_acc_helper(keys, accs, precis, recalls)
 
 
-
-def print_results(folder, timeInterval=1.5, minPeakHeight=25, group_by=[POSITIVE, SCENARIO]):
-    print(get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=[POSITIVE]))
-    print("\n")
-    print(json.dumps(get_num_detected_each_cat(folder, timeInterval=timeInterval, minPeakHeight=minPeakHeight, group_by=group_by), indent=4))
 
 if __name__ == '__main__':
-    # plot_acc_precis_recall()
-
-    # # plot_results()
-    # folder = "finaldata"
-    # categories = people
-    # cat_type = PERSON
-    # acc_dict, prec_dict, rec_dict = get_accuracy_dict(folder, categories, cat_type, minPeakHeight=3, extra=[False, True])
-    # print(acc_dict)
-    # print(prec_dict)
-    # print(rec_dict)
+    plot_results()
+    folder = "finaldata"
+    categories = people
+    cat_type = PERSON
+    acc_dict, prec_dict, rec_dict = get_accuracy_dict(folder, categories, cat_type, minPeakHeight=3, extra=[False, True])
+    print(acc_dict)
+    print(prec_dict)
+    print(rec_dict)
 
     folder = "finaldata"
-    # categories = scenarios
-    # cat_type = SCENARIO
-    # plot_acc_precis_recall(folder, categories, cat_type, minPeakHeight=3, extra=[False, True])
+    categories = ["Lucy", "Cho Yin", "Najee", "Karlyn"]
+    cat_type = PERSON
+    plot_acc_precis_recall(folder, categories, cat_type, minPeakHeight=3, extra=[False, True])
 
     plot_algo_differences(folder)
-
-    # for extra in [[True, True], [True, False], [False, True], [False, False]]:
-    #     print(extra)
-    #     print(get_accuracy(folder, timeInterval=1.5, minPeakHeight=3, group_by=[POSITIVE], phrase="", extra=extra))

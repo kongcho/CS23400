@@ -7,6 +7,7 @@ import regex as re
 class Log(object):
     mtypes = ["xAccls", "yAccls", "zAccls"]
     def __init__(self, rawdata):
+    # Initialize log object based on raw data
         regex = "(\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+).*(Linear|Absolute|Acceleration|Accelerometer).*?([-\.\dE]+,[-\.\dE]+,[-\.\dE]+)"
         self.times = []
         self.seconds = []
@@ -46,6 +47,7 @@ class Log(object):
                 pass
 
 def datetime_to_float(d):
+# convert datetime to floa
     epoch = datetime.utcfromtimestamp(0)
     total_seconds =  (d - epoch).total_seconds()
     # total_seconds will be in decimals (millisecond precision)
