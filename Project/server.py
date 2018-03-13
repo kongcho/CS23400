@@ -1,9 +1,16 @@
 from bluetooth import *
-from gyroOrAccl import GyroOrAccel
+from gyroOrAccl1 import GyroOrAccel
 import time
 import datetime
+import os
 
 uuid = "54c7001e-263c-4fb6-bfa7-2dfe5fba0f5b"
+
+def make_sound():
+    duration = 0.1  # second
+    freq = 440  # Hz
+    os.system('play --no-show-progress --null --channels 1 synth %s sine %f' % (duration, freq))
+    return 0
 
 def flatten_list(arrs):
     full_list = []
@@ -12,8 +19,14 @@ def flatten_list(arrs):
     return full_list
 
 def analyse_string(data):
-    accl = GyroOrAccel("Accelerometer", data)
-    return accl.hasPeak()
+    abso = GyroOrAccel("Absolute", data, "fake")
+    res = abso.is_fall([False, True], 0.05, 0.01, 25, 25, 41, 12, 0.8)
+    print(res)
+    # abso.plotFinalAlgoPeaks([False, True], 0.05, 0.01, 25, 25, 41, 12, 0.8)
+    if len(res) != 0:
+        return True
+    else:
+        return False
 
 def run_server(second=1):
     epoch = time.time()
@@ -42,12 +55,18 @@ def run_server(second=1):
     client_sock, client_info = server_sock.accept()
     print("Accepted connection from ", client_info)
 
-    try:
+    is_fall = False
+    prev = False
+    curr = False
+
+    # try:
+    with open("./fall_detection_data_0.txt", "w") as f:
         start_time = time.time()
         while True:
             data = client_sock.recv(1024)
             if len(data) == 0: break
             data = data.decode("utf-8")
+            f.write(data + "\n")
             if time.time() - start_time > second:
                 if len(curr_data) < 5:
                     curr_strs.append(data)
@@ -60,17 +79,22 @@ def run_server(second=1):
                     send_data = flatten_list(curr_data)
                     timestamp = time.time()
                     value = datetime.datetime.fromtimestamp(timestamp)
-                    is_single_peak = analyse_string(send_data)
-                    print("%s\t%s\t%s" % (value.strftime('%Y-%m-%d %H:%M:%S.%f'), \
-                                          len(send_data), is_single_peak))
-                    client_sock.send("EH")
-                    # client_sock.send(str(is_single_peak))
+                    curr = analyse_string(send_data)
+                    if prev and curr:
+                        is_fall = True
+                        make_sound()
+                    #f.write(data + "\n")#'\n'.join(send_data))
+                    print("%s\t%s\t%s\tis_fall: %s" % (value.strftime('%Y-%m-%d %H:%M:%S.%f'), \
+                                                       len(send_data), curr, is_fall))
+                    client_sock.send(str(is_fall))
                     start_time = time.time()
+                    is_fall = False
+                    prev = curr
                 curr_strs = []
             else:
                 curr_strs.append(data)
-    except IOError:
-        return 1
+    # except IOError:
+    #     return 1
 
     print("disconnected")
 
